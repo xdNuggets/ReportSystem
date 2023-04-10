@@ -1,0 +1,19 @@
+name: ReportSystem
+version: '${project.version}'
+main: me.joshh.reportsystem.ReportSystem
+authors: [Josh]
+description: A spigot plugin for reporting cheaters. Includes managing reports, and more!
+website: joshh.me
+
+commands:
+
+  report:
+   description: Report a player for cheating.
+   aliases: [rep, r]
+
+  reports:
+    description: Allows staff members to manage reports.
+
+  reportsystem:
+    description: Allows administrators to manage the plugin.
+    aliases: [rs]
