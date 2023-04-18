@@ -6,7 +6,7 @@ sql:
   password:
 
 messages:
-  ban-command: /ipban %player% %reason%
+  ban-command: /ipban %player% [REPORT] %reason%
   date-format: dd/MM/yyyy HH:mm:ss
 
 # These are toggleable options you can enable/disable by settings the values to true/false.
