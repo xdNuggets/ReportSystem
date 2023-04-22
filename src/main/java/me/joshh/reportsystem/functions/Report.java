@@ -1,28 +1,22 @@
 package me.joshh.reportsystem.functions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.HashMap;
 
 public class Report {
 
 
-
-
-    private final Player reported;
+    private final String reported;
     private final String reason;
-    private final Player reporter;
+    private final String reporter;
     public static int id = 1;
     String date;
 
 
-
-
-
     public Report(Player reported, Player reporter, String reason, String date)   {
-        this.reported = reported;
+        this.reported = reported.getUniqueId().toString();
         this.reason = reason;
-        this.reporter = reporter;
+        this.reporter = reporter.getUniqueId().toString();
 
         this.date = date;
         id++;
@@ -30,7 +24,7 @@ public class Report {
     }
 
     public Player getReportedUser() {
-        return reported;
+        return Bukkit.getPlayer(reported);
     }
 
     public String getReason() {
@@ -42,7 +36,8 @@ public class Report {
     }
 
     public Player getReporter() {
-        return reporter;
+
+        return Bukkit.getPlayer(reporter);
     }
 
     public int getID() {

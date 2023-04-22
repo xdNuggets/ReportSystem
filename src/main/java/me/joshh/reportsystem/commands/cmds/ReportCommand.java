@@ -3,6 +3,9 @@ package me.joshh.reportsystem.commands.cmds;
 import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.functions.Report;
 import me.joshh.reportsystem.sql.SQLManager;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,6 +22,7 @@ import static me.joshh.reportsystem.ReportSystem.activeReports;
 public class ReportCommand implements CommandExecutor {
 
     SQLManager sql = new SQLManager();
+    String prefix = ReportSystem.prefix;
 
 
     @Override
@@ -53,9 +57,11 @@ public class ReportCommand implements CommandExecutor {
                 String reason = sb.toString();
 
                 Player reportedPlayer = player.getServer().getPlayer(args[0]);
+
                 LocalDateTime now = LocalDateTime.now();
-                DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern(ReportSystem.config.getString("messages.date-format"));
+                DateTimeFormatter myFormatObj = ReportSystem.myFormatObj;
                 String formattedDate = now.format(myFormatObj);
+
 
                 // If the player is offline
                 if(reportedPlayer == null) {
@@ -63,28 +69,24 @@ public class ReportCommand implements CommandExecutor {
                     OfflinePlayer offlineTarget = player.getServer().getOfflinePlayer(args[0]);
                     System.out.println("Player " + offlineTarget.getName() + " is offline.");
                     if(offlineTarget.hasPlayedBefore()) {
-                        Report report = new Report((Player) offlineTarget, player,reason, formattedDate);
-                        player.sendMessage("§aReport created!");
-                        player.sendMessage("§e━━━━━━━━━━━━━━━━━━");
-                        player.sendMessage("§eReported: §f" + report.getReportedUser().getName());
-                        player.sendMessage("§eReason: §f" + report.getReason());
-                        player.sendMessage("§e━━━━━━━━━━━━━━━━━━");
 
-                        for(Player p : player.getServer().getOnlinePlayers()) {
-                            if(p.hasPermission("rs.alert")) {
-                                p.sendMessage("§eNew report created!");
-                                p.sendMessage("§e━━━━━━━━━━━━━━━━━━");
-                                p.sendMessage("§eReported: §f" + report.getReportedUser().getName());
-                                p.sendMessage("§eReason: §f" + report.getReason());
-                                p.sendMessage("§eReported by: §f" + report.getReporter().getName());
-                                p.sendMessage("§e━━━━━━━━━━━━━━━━━━");
+                        Report report = new Report((Player) offlineTarget, player, reason, formattedDate);
+                        // Send message to the player who created the report
+                        sendOfflineAlert(player, reason, formattedDate, offlineTarget);
+
+
+                        for (Player p : player.getServer().getOnlinePlayers()) {
+                            if (p.hasPermission("rs.alert")) {
+                                sendStaffAlert(p, reason, formattedDate, (Player) offlineTarget, player);
                                 ReportSystem.sendSound(p);
-                                addReport((Player) offlineTarget, player, reason, formattedDate);
+
                             }
+
                         }
                         try {
 
-                            sql.createReport(reportedPlayer.getName(), player.getName(), reason, formattedDate);
+                            sql.createReport(reportedPlayer, player, reason, formattedDate);
+                            addReport((Player) offlineTarget, player, reason, formattedDate);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -95,26 +97,20 @@ public class ReportCommand implements CommandExecutor {
                     // If the player is online, create a report
                     System.out.println("Player " + reportedPlayer.getName() + " is online.");
                     Report report = new Report(reportedPlayer, player,reason, formattedDate);
-                    player.sendMessage("§aReport created!");
-                    player.sendMessage("§e━━━━━━━━━━━━━━━━━━");
-                    player.sendMessage("§eReported: §f" + report.getReportedUser().getName());
-                    player.sendMessage("§eReason: §f" + report.getReason());
-                    player.sendMessage("§e━━━━━━━━━━━━━━━━━━");
+                    sendAlert(player, reason, formattedDate, reportedPlayer);
 
                     for(Player p : player.getServer().getOnlinePlayers()) {
                         if(p.hasPermission("rs.alert")) {
-                            p.sendMessage("§e━━━━━━━━━━━━━━━━━━");
-                            p.sendMessage("§eReported: §f" + report.getReportedUser().getName());
-                            p.sendMessage("§eReason: §f" + report.getReason());
-                            p.sendMessage("§eReported by: §f" + report.getReporter().getName());
-                            p.sendMessage("§e━━━━━━━━━━━━━━━━━━");
+                            // Send message to staff
+                            sendStaffAlert(p, reason, formattedDate, reportedPlayer, player);
                             ReportSystem.sendSound(p);
-                            addReport(reportedPlayer, player, reason, formattedDate);
+
                         }
                     }
 
                     try {
-                        sql.createReport(reportedPlayer.getName(), player.getName(), reason, formattedDate);
+                        sql.createReport(reportedPlayer, player, reason, formattedDate);
+                        addReport(reportedPlayer, player, reason, formattedDate);
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -124,10 +120,45 @@ public class ReportCommand implements CommandExecutor {
         return false;
     }
 
+    private void sendOfflineAlert(Player player, String reason, String formattedDate, OfflinePlayer offlineTarget) {
+
+        TextComponent message = new TextComponent("§A(!) You have reported " + offlineTarget.getName() + " for §e" + reason);
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§6Information\n" +
+                prefix + " §fReported by " + prefix + "§f " + player.getName() + "\n" +
+                "\n" + prefix + " Reason " + prefix + " " + reason + "\n" +
+                "\n" + prefix + " Reported at " + prefix + " " + formattedDate).create()));
+
+        player.spigot().sendMessage(message);
+    }
+
+    private void sendAlert(Player player, String reason, String formattedDate, Player offlineTarget) {
+
+        TextComponent message = new TextComponent("§A(!) You have reported " + offlineTarget.getName() + " for §e" + reason);
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§6Information\n" +
+                prefix + " §fReported by " + prefix + "§f " + player.getName() + "\n" +
+                "\n" + prefix + " Reason " + prefix + " " + reason + "\n" +
+                "\n" + prefix + " Reported at " + prefix + " " + formattedDate).create()));
+
+        player.spigot().sendMessage(message);
+    }
+
+    private void sendStaffAlert(Player player, String reason, String formattedDate, Player reportedPlayer, Player reporter) {
+        String prefix = "§l§5»§r";
+        TextComponent message = new TextComponent("§e(!) " + reporter.getName() + " reported §c" + reportedPlayer.getName() + "§e for §a" + reason);
+        message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§6Information\n" +
+                prefix + " §fReported by " + prefix + "§f " + reporter.getName() + "\n" +
+                "\n" + prefix + " Reason " + prefix + " " + reason + "\n" +
+                "\n" + prefix + " Reported at " + prefix + " " + formattedDate).create()));
+
+        player.spigot().sendMessage(message);
+    }
+
     public void addReport(Player reportedPlayer, Player reporter, String reason, String date) {
         if (!activeReports.containsKey(reportedPlayer.getName())) {
-            activeReports.put(reportedPlayer.getName(), new ArrayList<>());
-        }else{
+            ArrayList<Report> reports = new ArrayList<>();
+            activeReports.put(reportedPlayer.getName(), reports);
+            reports.add(new Report(reportedPlayer, reporter, reason, date));
+        } else {
             activeReports.get(reportedPlayer.getName()).add(new Report(reportedPlayer, reporter, reason, date));
         }
 

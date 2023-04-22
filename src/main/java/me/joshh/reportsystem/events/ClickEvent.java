@@ -16,31 +16,37 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class ClickEvent implements Listener {
 
-    private FileConfiguration config = ReportSystem.config;
+    private final FileConfiguration config = ReportSystem.config;
 
     @EventHandler
     public void onClickEvent(InventoryClickEvent e) throws SQLException {
         SQLManager sql = new SQLManager();
         ItemStack borderItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8);
-        ItemStack denyItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
+        ItemStack denyItem = new ItemStack(Material.BARRIER, 1, (short) 7);
 
         if(e.getCurrentItem() == null) return;
 
 
         // Method called when player clicks on an item in the Reports Inventory (See ActiveReportsCommand.java)
-        if (e.getInventory().getTitle().equalsIgnoreCase("Unhandled Reports") && e.getCurrentItem().getType() == Material.BOOK) {
+        if (e.getInventory().getTitle().equalsIgnoreCase("Unhandled Reports")) {
             e.setCancelled(true);
-            String reporterName = e.getCurrentItem().getItemMeta().getDisplayName().replace("§7", "");
-            Report report = sql.getReportByReporter(reporterName);
+            String reportedName = e.getCurrentItem().getItemMeta().getDisplayName().replace("§a", "").replace("§c", "");
+            Report report = SQLManager.getReportByReported(Bukkit.getPlayer(reportedName).getUniqueId().toString());
             assert report != null;
             System.out.println(report);
 
-            if(e.getCurrentItem().getType() == Material.BOOK) {
-                Inventory inv = Bukkit.createInventory(e.getWhoClicked(), 27, "§7" + report.getReporter().getName() + "'s Report");
+
+            if (e.getCurrentItem().getType() == Material.BOOK_AND_QUILL) {
+
+                Inventory inv = Bukkit.createInventory(e.getWhoClicked(), 27, "§7" + reportedName + "'s Report");
 
                 ItemStack reportInfo = new ItemStack(Material.PAPER);
                 ItemStack punishItem = new ItemStack(Material.BOOK_AND_QUILL);
@@ -51,15 +57,62 @@ public class ClickEvent implements Listener {
 
 
                 ItemMeta infoMeta = reportInfo.getItemMeta();
-                infoMeta.setDisplayName("§eReport §a#" + sql.getID(report.getReportedUser().getName()));
-                infoMeta.setLore(e.getCurrentItem().getItemMeta().getLore());
+                infoMeta.setDisplayName("§e " + reportedName);
+                ArrayList<String> infoLore = new ArrayList<>();
+
+                SimpleDateFormat myFormatObj = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                String now = LocalDateTime.now().format(ReportSystem.myFormatObj);
+
+                try {
+                    Date date2 = myFormatObj.parse(report.getDate());
+                    Date date1 = myFormatObj.parse(now);
+
+                    long diff = date1.getTime() - date2.getTime();
+                    long diffSeconds = diff / 1000 % 60;
+                    long diffMinutes = diff / (60 * 1000) % 60;
+                    long diffHours = diff / (60 * 60 * 1000) % 24;
+                    long diffDays = diff / (24 * 60 * 60 * 1000);
+
+                    String timeAgo = "";
+                    if (diffDays > 0) {
+                        timeAgo += diffDays + "d, ";
+                    }
+                    if (diffHours > 0) {
+                        timeAgo += diffHours + "h, ";
+                    }
+                    if (diffMinutes > 0) {
+                        timeAgo += diffMinutes + "m, ";
+                    }
+                    if (diffSeconds > 0) {
+                        timeAgo += diffSeconds + "s ";
+                    }
+                    if (timeAgo.equals("")) {
+                        timeAgo = "0s";
+                    }
+                    String prefix = ReportSystem.prefix;
+                    infoLore.add("§7Reported by: §a" + report.getReporter().getName());
+                    infoLore.add("§7Reported on: §a" + report.getDate() + " §7(" + timeAgo + "ago)");
+                    infoLore.add("§7Reported reason(s):");
+                    ArrayList<Report> reports = ReportSystem.activeReports.get(reportedName);
+                    for (Report r : reports) {
+                        infoLore.add("§7- §a" + r.getReason());
+                    }
+
+                    infoMeta.setLore(infoLore);
+
+
+                } catch (ParseException f) {
+                    throw new RuntimeException(f);
+                }
+
+
                 reportInfo.setItemMeta(infoMeta);
 
                 ItemMeta punishMeta = punishItem.getItemMeta();
                 punishMeta.setDisplayName("§aSelect which punishment to inflict");
                 ArrayList<String> lore = new ArrayList<>();
                 lore.add("§7Click to choose a punishment");
-                lore.add("§7Choose to §6warn, §8mute, §ckick or §4ban this user");
+                lore.add("§7Choose to §6warn, §8mute, §ckick§7 or §4ban §7this user");
                 punishMeta.setLore(lore);
                 punishItem.setItemMeta(punishMeta);
 
@@ -71,23 +124,23 @@ public class ClickEvent implements Listener {
                 inv.setItem(13, reportInfo);
                 inv.setItem(15, denyItem);
 
-                for(int i = 0; i == inv.getSize() - 3; i++) {
+                for (int i = 0; i == inv.getSize() - 3; i++) {
                     inv.setItem(inv.firstEmpty(), borderItem);
                 }
 
                 e.getWhoClicked().openInventory(inv);
 
             }
-        }
+        } else if (e.getCurrentItem().getType().equals(Material.STAINED_GLASS_PANE)) e.setCancelled(true);
 
         // Method called when player clicks on an item in an active report inventory
         if(e.getInventory().getTitle().contains("'s Report")) {
             String reportedUser = e.getInventory().getTitle().replace("§7", "").replace("'s Report", "");
             Player reportedPlayer = Bukkit.getPlayer(reportedUser);
             e.setCancelled(true);
-            if(e.getCurrentItem().getType() == Material.BARRIER) {
+            if (e.getCurrentItem().getType() == Material.BOOK_AND_QUILL) {
                 e.getWhoClicked().closeInventory();
-                Inventory inv = Bukkit.createInventory(e.getWhoClicked(), 45, "§7" + reportedUser + "'s Report");
+                Inventory inv = Bukkit.createInventory(e.getWhoClicked(), 27, "§7" + reportedUser + "'s Report");
 
                 ItemStack warnItem = new ItemStack(Material.PAPER);
                 ItemStack muteItem = new ItemStack(Material.BOOK_AND_QUILL);
@@ -104,11 +157,21 @@ public class ClickEvent implements Listener {
                 kickMeta.setDisplayName("§cKick " + reportedUser);
                 banMeta.setDisplayName("§4Ban " + reportedUser);
 
+                warnItem.setItemMeta(warnMeta);
+                muteItem.setItemMeta(muteMeta);
+                kickItem.setItemMeta(kickMeta);
+                banItem.setItemMeta(banMeta);
 
+                inv.setItem(10, warnItem);
+                inv.setItem(12, muteItem);
+                inv.setItem(14, kickItem);
+                inv.setItem(16, banItem);
 
+                for (int i = 0; i == inv.getSize() - 4; i++) {
+                    inv.setItem(inv.firstEmpty(), borderItem);
+                }
 
-
-
+                e.getWhoClicked().openInventory(inv);
 
             }
             if(e.getCurrentItem() == denyItem) {
@@ -118,7 +181,7 @@ public class ClickEvent implements Listener {
                 ItemStack noItem = new ItemStack(Material.REDSTONE_BLOCK);
                 ItemStack infoItem = new ItemStack(Material.PAPER);
                 ItemMeta infoMeta = infoItem.getItemMeta();
-                infoMeta.setDisplayName("§eReason: " + sql.getReportByReported(reportedUser).getReason());
+                infoMeta.setDisplayName("§eReason: " + SQLManager.getReportByReported(reportedUser).getReason());
                 ItemMeta yesMeta = yesItem.getItemMeta();
                 ItemMeta noMeta = noItem.getItemMeta();
                 yesMeta.setDisplayName("§aYes.");

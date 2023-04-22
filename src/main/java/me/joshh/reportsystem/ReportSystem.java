@@ -13,14 +13,13 @@ import me.joshh.reportsystem.sql.SQLManager;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public final class ReportSystem extends JavaPlugin {
 
@@ -28,6 +27,7 @@ public final class ReportSystem extends JavaPlugin {
 
     public static MySQL sql;
     public static FileConfiguration config;
+    public static DateTimeFormatter myFormatObj;
 
     public static Plugin plugin;
 
@@ -41,9 +41,9 @@ public final class ReportSystem extends JavaPlugin {
     public static boolean messages;
     public static boolean banCommand;
     public static boolean showDate;
-    public static HashMap<String, List<Report>> activeReports;
+    public static HashMap<String, ArrayList<Report>> activeReports;
 
-
+    public static String prefix = "§l§5»§r"; // TODO: Make editable in config.yml
 
 
     @Override
@@ -53,6 +53,7 @@ public final class ReportSystem extends JavaPlugin {
 
         config = getConfig();
         activeReports = new HashMap<>();
+        myFormatObj = DateTimeFormatter.ofPattern(ReportSystem.config.getString("messages.date-format"));
 
         // Setup booleans
         sounds = getConfig().getBoolean("sounds");

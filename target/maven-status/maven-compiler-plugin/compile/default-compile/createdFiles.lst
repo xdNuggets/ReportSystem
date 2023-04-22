@@ -1,10 +1,10 @@
-me\joshh\reportsystem\commands\PluginCommandManager.class
 me\joshh\reportsystem\commands\cmds\ReportCommand.class
+me\joshh\reportsystem\sql\SQLManager.class
+me\joshh\reportsystem\commands\subcommands\SettingsCommand.class
+me\joshh\reportsystem\commands\PluginCommandManager.class
 me\joshh\reportsystem\commands\SubCommand.class
 me\joshh\reportsystem\events\ClickEvent.class
 me\joshh\reportsystem\ReportSystem.class
 me\joshh\reportsystem\commands\cmds\ActiveReportsCommand.class
-me\joshh\reportsystem\sql\SQLManager.class
-me\joshh\reportsystem\commands\subcommands\SettingsCommand.class
 me\joshh\reportsystem\sql\MySQL.class
 me\joshh\reportsystem\functions\Report.class

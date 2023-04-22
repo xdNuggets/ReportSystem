@@ -7,15 +7,15 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class SendReportsMap implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if(sender instanceof Player) {
             Player p = (Player) sender;
-            HashMap<String, List<Report>> reports = ReportSystem.activeReports;
+            HashMap<String, ArrayList<Report>> reports = ReportSystem.activeReports;
 
             for(String key : reports.keySet()) {
                 p.sendMessage("User reported: " + key);
