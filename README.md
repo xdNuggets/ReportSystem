@@ -7,7 +7,7 @@ My Spigot report system. Unfinished
 - [ ] Allow admins to edit reports. This includes denying them, accepting them, and changing the reason.
 - [ ] Allow ability to cancel reports made.
 - [ ] Create notification system when someone joins the server and their report has been edited (Accepted/Denied).
-- [ ] Discord Bot integration
+- [ ] Discord Bot integration (Begun)
 
 # Less important TODO
 - [ ] Convert the entire plugin to Kotlin (don't know any)
