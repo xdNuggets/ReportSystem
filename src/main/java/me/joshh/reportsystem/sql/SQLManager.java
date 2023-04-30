@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Random;
+import java.util.UUID;
 
 public class SQLManager {
 
@@ -79,7 +80,7 @@ public class SQLManager {
         ps.setString(1, reporter);
         ps.executeQuery();
         if(ps.getResultSet().next()) {
-            return new Report(Bukkit.getPlayer(ps.getResultSet().getString("reported")),  Bukkit.getPlayer(ps.getResultSet().getString("reporter")),ps.getResultSet().getString("reason"), ps.getResultSet().getString("date"));
+            return new Report(Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reported"))), Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reporter"))), ps.getResultSet().getString("reason"), ps.getResultSet().getString("date"));
         }else {
             return null;
         }
@@ -89,10 +90,10 @@ public class SQLManager {
     public static Report getReportByReported(String reported) throws SQLException {
         PreparedStatement ps;
         ps = ReportSystem.sql.getConnection().prepareStatement("SELECT * FROM reports WHERE reported = ?");
-        ps.setString(1, reported);
+        ps.setString(1, Bukkit.getPlayer(reported).getUniqueId().toString());
         ps.executeQuery();
         if(ps.getResultSet().next()) {
-            return new Report(Bukkit.getPlayer(ps.getResultSet().getString("reported")),  Bukkit.getPlayer(ps.getResultSet().getString("reporter")),ps.getResultSet().getString("reason"), ps.getResultSet().getString("date"));
+            return new Report(Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reported"))), Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reporter"))), ps.getResultSet().getString("reason"), ps.getResultSet().getString("date"));
         }else {
             return null;
         }

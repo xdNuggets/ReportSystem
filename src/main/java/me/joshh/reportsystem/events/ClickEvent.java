@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 public class ClickEvent implements Listener {
 
@@ -38,8 +39,11 @@ public class ClickEvent implements Listener {
         // Method called when player clicks on an item in the Reports Inventory (See ActiveReportsCommand.java)
         if (e.getInventory().getTitle().equalsIgnoreCase("Unhandled Reports")) {
             e.setCancelled(true);
-            String reportedName = e.getCurrentItem().getItemMeta().getDisplayName().replace("§a", "").replace("§c", "");
-            Report report = SQLManager.getReportByReported(Bukkit.getPlayer(reportedName).getUniqueId().toString());
+            String reportedName = e.getCurrentItem().getItemMeta().getDisplayName();
+            reportedName = reportedName.startsWith("§c") ? reportedName.replace("§c", "") : reportedName.replace("§a", "");
+            System.out.println(reportedName);
+            System.out.println(Bukkit.getPlayer(reportedName).getUniqueId().toString());
+            Report report = SQLManager.getReportByReported(Bukkit.getPlayer(reportedName).getName());
             assert report != null;
             System.out.println(report);
 
@@ -90,10 +94,11 @@ public class ClickEvent implements Listener {
                         timeAgo = "0s";
                     }
                     String prefix = ReportSystem.prefix;
-                    infoLore.add("§7Reported by: §a" + report.getReporter().getName());
+                    System.out.println(report.getReporter());
+                    infoLore.add("§7Reported by: §a" + Bukkit.getPlayer(UUID.fromString(report.getReporter())).getName());
                     infoLore.add("§7Reported on: §a" + report.getDate() + " §7(" + timeAgo + "ago)");
                     infoLore.add("§7Reported reason(s):");
-                    ArrayList<Report> reports = ReportSystem.activeReports.get(reportedName);
+                    ArrayList<Report> reports = ReportSystem.activeReports.get(Bukkit.getPlayer(reportedName).getUniqueId().toString());
                     for (Report r : reports) {
                         infoLore.add("§7- §a" + r.getReason());
                     }
@@ -136,7 +141,7 @@ public class ClickEvent implements Listener {
         // Method called when player clicks on an item in an active report inventory
         if(e.getInventory().getTitle().contains("'s Report")) {
             String reportedUser = e.getInventory().getTitle().replace("§7", "").replace("'s Report", "");
-            Player reportedPlayer = Bukkit.getPlayer(reportedUser);
+
             e.setCancelled(true);
             if (e.getCurrentItem().getType() == Material.BOOK_AND_QUILL) {
                 e.getWhoClicked().closeInventory();
@@ -152,7 +157,7 @@ public class ClickEvent implements Listener {
                 ItemMeta kickMeta = kickItem.getItemMeta();
                 ItemMeta banMeta = banItem.getItemMeta();
 
-                warnMeta.setDisplayName("§Warn " + reportedUser);
+                warnMeta.setDisplayName("§7Warn " + reportedUser);
                 muteMeta.setDisplayName("§8Mute " + reportedUser);
                 kickMeta.setDisplayName("§cKick " + reportedUser);
                 banMeta.setDisplayName("§4Ban " + reportedUser);

@@ -1,6 +1,5 @@
 package me.joshh.reportsystem.functions;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class Report {
@@ -13,7 +12,7 @@ public class Report {
     String date;
 
 
-    public Report(Player reported, Player reporter, String reason, String date)   {
+    public Report(Player reported, Player reporter, String reason, String date) {
         this.reported = reported.getUniqueId().toString();
         this.reason = reason;
         this.reporter = reporter.getUniqueId().toString();
@@ -23,8 +22,8 @@ public class Report {
 
     }
 
-    public Player getReportedUser() {
-        return Bukkit.getPlayer(reported);
+    public String getReportedUser() {
+        return reported;
     }
 
     public String getReason() {
@@ -35,9 +34,9 @@ public class Report {
         return date;
     }
 
-    public Player getReporter() {
+    public String getReporter() {
 
-        return Bukkit.getPlayer(reporter);
+        return reporter;
     }
 
     public int getID() {

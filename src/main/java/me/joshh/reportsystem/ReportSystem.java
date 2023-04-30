@@ -43,7 +43,7 @@ public final class ReportSystem extends JavaPlugin {
     public static boolean showDate;
     public static HashMap<String, ArrayList<Report>> activeReports;
 
-    public static String prefix = "§l§5»§r"; // TODO: Make editable in config.yml
+    public static String prefix; // TODO: Make editable in config.yml
 
 
     @Override
@@ -60,6 +60,8 @@ public final class ReportSystem extends JavaPlugin {
         messages = getConfig().getBoolean("alert");
         banCommand = getConfig().getBoolean("use-ban-command");
         showDate = getConfig().getBoolean("show-date");
+
+        prefix = getConfig().getString("messages.prefix").replace("X", "§");
 
         // Setup SQL
         sql = new MySQL();

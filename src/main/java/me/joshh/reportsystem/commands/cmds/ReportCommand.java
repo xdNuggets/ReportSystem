@@ -70,7 +70,7 @@ public class ReportCommand implements CommandExecutor {
                     System.out.println("Player " + offlineTarget.getName() + " is offline.");
                     if(offlineTarget.hasPlayedBefore()) {
 
-                        Report report = new Report((Player) offlineTarget, player, reason, formattedDate);
+
                         // Send message to the player who created the report
                         sendOfflineAlert(player, reason, formattedDate, offlineTarget);
 
@@ -96,7 +96,7 @@ public class ReportCommand implements CommandExecutor {
                 }else {
                     // If the player is online, create a report
                     System.out.println("Player " + reportedPlayer.getName() + " is online.");
-                    Report report = new Report(reportedPlayer, player,reason, formattedDate);
+
                     sendAlert(player, reason, formattedDate, reportedPlayer);
 
                     for(Player p : player.getServer().getOnlinePlayers()) {
@@ -109,7 +109,7 @@ public class ReportCommand implements CommandExecutor {
                     }
 
                     try {
-                        sql.createReport(reportedPlayer, player, reason, formattedDate);
+                        sql.createReport(player, reportedPlayer, reason, formattedDate);
                         addReport(reportedPlayer, player, reason, formattedDate);
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -143,7 +143,7 @@ public class ReportCommand implements CommandExecutor {
     }
 
     private void sendStaffAlert(Player player, String reason, String formattedDate, Player reportedPlayer, Player reporter) {
-        String prefix = "§l§5»§r";
+
         TextComponent message = new TextComponent("§e(!) " + reporter.getName() + " reported §c" + reportedPlayer.getName() + "§e for §a" + reason);
         message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§6Information\n" +
                 prefix + " §fReported by " + prefix + "§f " + reporter.getName() + "\n" +
@@ -154,12 +154,12 @@ public class ReportCommand implements CommandExecutor {
     }
 
     public void addReport(Player reportedPlayer, Player reporter, String reason, String date) {
-        if (!activeReports.containsKey(reportedPlayer.getName())) {
+        if (!activeReports.containsKey(reportedPlayer.getUniqueId().toString())) {
             ArrayList<Report> reports = new ArrayList<>();
-            activeReports.put(reportedPlayer.getName(), reports);
+            activeReports.put(reportedPlayer.getUniqueId().toString(), reports);
             reports.add(new Report(reportedPlayer, reporter, reason, date));
         } else {
-            activeReports.get(reportedPlayer.getName()).add(new Report(reportedPlayer, reporter, reason, date));
+            activeReports.get(reportedPlayer.getUniqueId().toString()).add(new Report(reportedPlayer, reporter, reason, date));
         }
 
     }

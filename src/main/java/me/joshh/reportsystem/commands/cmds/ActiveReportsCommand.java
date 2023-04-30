@@ -15,10 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class ActiveReportsCommand implements CommandExecutor {
 
@@ -50,8 +47,10 @@ public class ActiveReportsCommand implements CommandExecutor {
                 for (String player : activeReports.keySet()) {
                     ItemStack book = new ItemStack(Material.BOOK_AND_QUILL);
                     ItemMeta meta = book.getItemMeta();
-                    String onlineStatus = Bukkit.getPlayer(player) != null ? "§a" : "§c";
-                    meta.setDisplayName(onlineStatus + player);
+                    Player target = Bukkit.getPlayer(player) != null ? Bukkit.getPlayer(player) : Bukkit.getOfflinePlayer(player).getPlayer();
+                    String onlineStatus = target != null ? "§a" : "§c";
+
+                    meta.setDisplayName(onlineStatus + target.getName());
                     List<String> lore = new ArrayList<>();
                     for (Report report : activeReports.get(player)) {
                         String date = report.getDate();
@@ -84,12 +83,12 @@ public class ActiveReportsCommand implements CommandExecutor {
                             if (timeAgo.equals("")) {
                                 timeAgo = "0s";
                             }
-                            Player reporter = report.getReporter();
+                            Player reporter = Bukkit.getPlayer(UUID.fromString(report.getReporter()));
+                            if (reporter == null) {
+                                reporter = (Player) Bukkit.getOfflinePlayer(report.getReporter());
+                            }
 
-                            System.out.println(report);
-                            System.out.println("--" + report.getReportedUser());
-                            System.out.println(". " + report.getReporter());
-                            lore.add("§7" + reporter.getName() + " / §e" + report.getReason() + " §8(" + timeAgo + "ago)");
+                            lore.add("§7" + reporter.getName() + " ; §e" + report.getReason() + " §8(" + timeAgo + "ago)");
 
 
                         } catch (ParseException e) {
