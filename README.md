@@ -15,4 +15,4 @@ My Spigot report system. Unfinished
 
 # Known bugs
 - /rs settings doesn't update
-- getReportedUser() and getReporter() in Report.java return null
+
