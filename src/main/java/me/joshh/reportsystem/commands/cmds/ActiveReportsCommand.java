@@ -47,8 +47,11 @@ public class ActiveReportsCommand implements CommandExecutor {
                 for (String player : activeReports.keySet()) {
                     ItemStack book = new ItemStack(Material.BOOK_AND_QUILL);
                     ItemMeta meta = book.getItemMeta();
-                    Player target = Bukkit.getPlayer(player) != null ? Bukkit.getPlayer(player) : Bukkit.getOfflinePlayer(player).getPlayer();
-                    String onlineStatus = target != null ? "§a" : "§c";
+
+
+                    Player target = Bukkit.getPlayer(UUID.fromString(player));
+
+                    String onlineStatus = target.isOnline() ? "§a" : "§c";
 
                     meta.setDisplayName(onlineStatus + target.getName());
                     List<String> lore = new ArrayList<>();
@@ -89,6 +92,8 @@ public class ActiveReportsCommand implements CommandExecutor {
                             }
 
                             lore.add("§7" + reporter.getName() + " ; §e" + report.getReason() + " §8(" + timeAgo + "ago)");
+                            lore.add(" ");
+
 
 
                         } catch (ParseException e) {

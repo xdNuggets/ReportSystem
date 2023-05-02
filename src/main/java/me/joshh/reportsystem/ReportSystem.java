@@ -3,7 +3,7 @@ package me.joshh.reportsystem;
 
 import me.joshh.reportsystem.commands.PluginCommandManager;
 import me.joshh.reportsystem.commands.admin.ReloadSQLCommand;
-import me.joshh.reportsystem.commands.admin.SendReportsMap;
+import me.joshh.reportsystem.commands.cmds.PlayerActiveReportsCommand;
 import me.joshh.reportsystem.commands.cmds.ActiveReportsCommand;
 import me.joshh.reportsystem.commands.cmds.ReportCommand;
 import me.joshh.reportsystem.events.ClickEvent;
@@ -87,7 +87,7 @@ public final class ReportSystem extends JavaPlugin {
         getCommand("report").setExecutor(new ReportCommand());
         getCommand("reports").setExecutor(new ActiveReportsCommand());
         getCommand("reportsystem").setExecutor(new PluginCommandManager());
-        getCommand("activereports").setExecutor(new SendReportsMap());
+        getCommand("activereports").setExecutor(new PlayerActiveReportsCommand());
         getCommand("sql").setExecutor(new ReloadSQLCommand());
 
 

@@ -22,6 +22,7 @@ public class SQLManager {
         PreparedStatement ps;
         ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS reports (id VARCHAR(7), reporter VARCHAR(128), reported VARCHAR(128), reason VARCHAR(255), date VARCHAR(255), PRIMARY KEY (id))");
         ps.executeUpdate();
+
     }
 
     private String generateID(int length) {
