@@ -14,6 +14,7 @@ My Spigot report system. Unfinished
 - [ ] Possibly make this into a Bungee Plugin (not certain whether I want to do this)
 - [ ] Rework ID System (WIP)
 - [ ] Save reports when onDisable is ran
+- [ ] Add extra info to report info (on click probably). This will include first played, last played, and maybe alts?
 
 # Known bugs
 - /rs settings doesn't update
