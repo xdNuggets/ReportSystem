@@ -12,7 +12,7 @@ My Spigot report system. Unfinished
 # Less important TODO
 - [ ] Convert the entire plugin to Kotlin (don't know any)
 - [ ] Possibly make this into a Bungee Plugin (not certain whether I want to do this)
-- [ ] Rework ID System (WIP)
+- [x] Rework ID System
 - [ ] Save reports when onDisable is ran
 - [ ] Add extra info to report info (on click probably). This will include first played, last played, and maybe alts?
 
