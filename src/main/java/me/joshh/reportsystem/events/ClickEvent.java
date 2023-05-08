@@ -94,9 +94,11 @@ public class ClickEvent implements Listener {
                     if (timeAgo.equals("")) {
                         timeAgo = "0s";
                     }
-
+                    infoLore.add("§7Report ID: §6" + report.getID());
+                    infoLore.add(" ");
                     infoLore.add("§7Reported by: §a" + Bukkit.getPlayer(UUID.fromString(report.getReporter())).getName());
-                    infoLore.add("§7Reported on: §a" + report.getDate() + " §7(" + timeAgo + "ago)");
+
+                    infoLore.add("§7Reported on: §a" + report.getDate() + " §8" + timeAgo + "ago)");
                     infoLore.add("§7Reported reason(s):");
 
                     ArrayList<Report> reports = ReportSystem.activeReports.get(p.getUniqueId().toString());
@@ -142,8 +144,13 @@ public class ClickEvent implements Listener {
         // Method called when player clicks on an item in an active report inventory
         if(e.getInventory().getTitle().contains("'s Report")) {
             String reportedUser = e.getInventory().getTitle().replace("§7", "").replace("'s Report", "");
+            Report report = SQLManager.getReportByReported(reportedUser);
+            assert report != null;
 
             e.setCancelled(true);
+
+
+            // calls if the report is to be accepted
             if (e.getCurrentItem().getType() == Material.BOOK_AND_QUILL) {
                 e.getWhoClicked().closeInventory();
                 Inventory inv = Bukkit.createInventory(e.getWhoClicked(), 27, "§7" + reportedUser + "'s Report");
@@ -180,60 +187,48 @@ public class ClickEvent implements Listener {
                 e.getWhoClicked().openInventory(inv);
 
             }
+
+            switch(e.getCurrentItem().getItemMeta().getDisplayName()) {
+                case "§7Warn":
+                    String warnReason = changeReason((Player) e.getWhoClicked());
+                    // Warn stuff
+                    SQLManager.acceptReport(report, warnReason);
+
+                case "§8Mute":
+
+                    String muteReason = changeReason((Player) e.getWhoClicked());
+                    // Mute stuff
+                    SQLManager.acceptReport(report, muteReason);
+
+                case "§cKick":
+                    String kickReason = changeReason((Player) e.getWhoClicked());
+                    // Kick stuff
+                    SQLManager.acceptReport(report, kickReason);
+
+                case "§4Ban":
+                    String banReason = changeReason((Player) e.getWhoClicked());
+                    // Ban stuff
+                    SQLManager.acceptReport(report, banReason);
+            }
+
+
+
+            // Denial Stuff
             if(e.getCurrentItem().getItemMeta().getDisplayName() == "§cDeny this report.") {
                 e.setCancelled(true);
-                Inventory inv = Bukkit.createInventory(e.getWhoClicked(), 9, "§fWould you like to edit the reason?");
-                ItemStack yesItem = new ItemStack(Material.EMERALD_BLOCK);
-                ItemStack noItem = new ItemStack(Material.REDSTONE_BLOCK);
-                ItemStack infoItem = new ItemStack(Material.PAPER);
-                ItemMeta infoMeta = infoItem.getItemMeta();
-                infoMeta.setDisplayName("§eReason: " + SQLManager.getReportByReported(reportedUser).getReason());
-                ItemMeta yesMeta = yesItem.getItemMeta();
-                ItemMeta noMeta = noItem.getItemMeta();
-                yesMeta.setDisplayName("§aYes.");
-                noMeta.setDisplayName("§cNo.");
-                yesItem.setItemMeta(yesMeta);
-                noItem.setItemMeta(noMeta);
-                inv.setItem(1, yesItem);
-                inv.setItem(7, noItem);
+                e.getWhoClicked().closeInventory();
+                String reason = changeReason((Player) e.getWhoClicked());
 
-                e.getWhoClicked().openInventory(inv);
 
-                // 0 1 2 3 4 5 6 7 8
             }
 
 
         }
 
-        if(e.getCurrentItem().getItemMeta().getDisplayName() == "§aYes.") {
-            e.getWhoClicked().closeInventory();
-            e.setCancelled(true);
-
-            String[] newReason = new String[1];
-            e.getWhoClicked().sendMessage("§aPlease enter the new reason in the rename field.");
-            ReportSystem.sendSound((Player) e.getWhoClicked());
-            new AnvilGUI(ReportSystem.plugin, (Player) e.getWhoClicked(), "Edit Reason", (player, reply) -> {
-                System.out.println("hi");
-                newReason[0] = reply;
-
-                e.getWhoClicked().sendMessage("§aYou have changed the reason to: " + newReason[0]);
-                // Handle the ban here.
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ReportSystem.config.getString("commands.ban-command").replace("%player%", player.getName()).replace("%reason%", newReason[0]));
-                return null;
-            });
-
-        }
-        if(e.getCurrentItem().getItemMeta().getDisplayName() == "§cNo.") {
-            e.setCancelled(true);
-            e.getWhoClicked().closeInventory();
-            e.getWhoClicked().sendMessage("§aYou have denied the report.");
-            // deny report
-
-
-        }
 
 
 
+        // /rs settings stuff
         if(e.getInventory().getTitle().equalsIgnoreCase("Report System Settings")) {
             Player p = (Player) e.getWhoClicked();
             e.setCancelled(true);
@@ -266,6 +261,23 @@ public class ClickEvent implements Listener {
 
 
 
+    }
+
+
+    private String changeReason(Player player) {
+        String[] newReason = new String[1];
+        player.sendMessage("§aPlease enter the new reason in the rename field.");
+        ReportSystem.sendSound(player);
+        new AnvilGUI(ReportSystem.plugin, player, "Edit reason here", (p, reply) -> {
+            System.out.println("hi");
+            newReason[0] = reply;
+
+            player.sendMessage("§aYou have changed the reason to: " + newReason[0]);
+
+            return newReason[0];
+        });
+
+        return ReportSystem.config.getString("messages.default-reason");
     }
 
 

@@ -85,8 +85,11 @@ public class ReportCommand implements CommandExecutor {
                         }
                         try {
 
-                            sql.createReport(reportedPlayer, player, reason, formattedDate);
-                            addReport((Player) offlineTarget, player, reason, formattedDate);
+                            sql.createReport((Player) offlineTarget, player, reason, formattedDate);
+
+
+                            // silly test to see if github webhook works
+
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -110,7 +113,7 @@ public class ReportCommand implements CommandExecutor {
 
                     try {
                         sql.createReport(player, reportedPlayer, reason, formattedDate);
-                        addReport(reportedPlayer, player, reason, formattedDate);
+
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
@@ -153,14 +156,5 @@ public class ReportCommand implements CommandExecutor {
         player.spigot().sendMessage(message);
     }
 
-    public void addReport(Player reportedPlayer, Player reporter, String reason, String date) {
-        if (!activeReports.containsKey(reportedPlayer.getUniqueId().toString())) {
-            ArrayList<Report> reports = new ArrayList<>();
-            activeReports.put(reportedPlayer.getUniqueId().toString(), reports);
-            reports.add(new Report(reportedPlayer, reporter, reason, date));
-        } else {
-            activeReports.get(reportedPlayer.getUniqueId().toString()).add(new Report(reportedPlayer, reporter, reason, date));
-        }
 
-    }
 }

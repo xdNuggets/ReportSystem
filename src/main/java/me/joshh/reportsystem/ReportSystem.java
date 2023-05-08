@@ -74,10 +74,13 @@ public final class ReportSystem extends JavaPlugin {
         }
 
         if(sql.isConnected()) {
-            getLogger().info("Successfully connected to MySQL database. Creating tables...");
+
             SQLManager sqls = new SQLManager();
             try {
                 sqls.createReportTable();
+                sqls.createAcceptedReportTable();
+                sqls.createDeniedReportTable();
+
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }

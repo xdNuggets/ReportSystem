@@ -35,9 +35,6 @@ public class SettingsCommand extends SubCommand {
         if(player.hasPermission("reportsystem.admin")) {
             Inventory inv = Bukkit.createInventory(player, 9, "Report System Settings");
 
-
-
-
             ItemStack soundsItem = new ItemStack(Material.NOTE_BLOCK);
             ItemStack borderItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8);
             ItemStack messagesItem = new ItemStack(Material.PAPER);
@@ -50,7 +47,7 @@ public class SettingsCommand extends SubCommand {
 
             ItemMeta soundsMeta = soundsItem.getItemMeta();
 
-            soundsMeta.setDisplayName("§eSounds: " + (sounds ? "§aEnabled" : "§cDisabled"));
+            soundsMeta.setDisplayName("§ePlay Sounds: " + (sounds ? "§aEnabled" : "§cDisabled"));
             soundsItem.setItemMeta(soundsMeta);
 
             ItemMeta messagesMeta = messagesItem.getItemMeta();
@@ -60,7 +57,7 @@ public class SettingsCommand extends SubCommand {
 
             ItemMeta banCommandMeta = banCommandItem.getItemMeta();
 
-            banCommandMeta.setDisplayName("§eBan Command: " + (banCommand ? "§aEnabled" : "§cDisabled"));
+            banCommandMeta.setDisplayName("§eBan Player: " + (banCommand ? "§aEnabled" : "§cDisabled"));
             banCommandItem.setItemMeta(banCommandMeta);
 
             ItemMeta showDateMeta = showDateItem.getItemMeta();

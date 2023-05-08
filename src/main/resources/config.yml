@@ -9,6 +9,7 @@ messages:
   ban-command: /ipban %player% [REPORT] %reason%
   date-format: dd/MM/yyyy HH:mm:ss
   prefix: 'XlX5»Xr'
+  default-reason: '[REPORT] %player% - %reason%'
 
 # These are toggleable options you can enable/disable by settings the values to true/false.
 toggleable:
