@@ -88,7 +88,7 @@ public class ReportCommand implements CommandExecutor {
                             sql.createReport((Player) offlineTarget, player, reason, formattedDate);
 
 
-                            // silly test to see if github webhook works
+
 
                         } catch (SQLException e) {
                             e.printStackTrace();
