@@ -15,6 +15,7 @@ My Spigot report system. Unfinished
 - [x] Rework ID System
 - [ ] Save reports when onDisable is ran
 - [ ] Add extra info to report info (on click probably). This will include first played, last played, and maybe alts?
+- [ ] Statistics for both staff members and players
 
 # Known bugs
 - /rs settings doesn't update
