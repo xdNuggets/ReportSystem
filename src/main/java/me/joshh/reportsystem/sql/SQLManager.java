@@ -130,8 +130,8 @@ public class SQLManager {
     public static void acceptReport(Report report, String reason) {
         PreparedStatement ps;
         try {
-            ps = ReportSystem.sql.getConnection().prepareStatement("DELETE FROM reports WHERE reported = ?");
-            ps.setString(1, Bukkit.getPlayer(report.getReportedUser()).getUniqueId().toString());
+            ps = ReportSystem.sql.getConnection().prepareStatement("DELETE FROM reports WHERE id = ?");
+            ps.setString(1, report.getID());
             ps.executeUpdate();
 
             ps = ReportSystem.sql.getConnection().prepareStatement("INSERT INTO accepted_reports (id, reporter, reported, reason, date) VALUES (?, ?, ?, ?, ?)");
@@ -153,8 +153,9 @@ public class SQLManager {
         PreparedStatement ps;
 
         try {
-            ps = ReportSystem.sql.getConnection().prepareStatement("DELETE FROM reports WHERE reported = ?");
-            ps.setString(1, Bukkit.getPlayer(report.getReportedUser()).getUniqueId().toString());
+
+            ps = ReportSystem.sql.getConnection().prepareStatement("DELETE FROM reports WHERE id = ?");
+            ps.setString(1, report.getID());
             ps.executeUpdate();
 
             ps = ReportSystem.sql.getConnection().prepareStatement("INSERT INTO denied_reports (id, reporter, reported, reason, date) VALUES (?, ?, ?, ?, ?)");

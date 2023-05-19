@@ -217,7 +217,19 @@ public class ClickEvent implements Listener {
             if(e.getCurrentItem().getItemMeta().getDisplayName() == "§cDeny this report.") {
                 e.setCancelled(true);
                 e.getWhoClicked().closeInventory();
-                String reason = changeReason((Player) e.getWhoClicked());
+                Player player = (Player) e.getWhoClicked();
+                String[] newReason = new String[1];
+                player.sendMessage("§aPlease enter the new reason in the rename field.");
+                ReportSystem.sendSound(player);
+                new AnvilGUI(ReportSystem.plugin, player, "Edit reason here", (p, reply) -> {
+                    System.out.println("hi");
+                    newReason[0] = reply;
+
+                    player.sendMessage("§aYou have changed the reason to: " + newReason[0]);
+                    SQLManager.denyReport(report, newReason[0]);
+
+                    return newReason[0];
+                });
 
 
             }
