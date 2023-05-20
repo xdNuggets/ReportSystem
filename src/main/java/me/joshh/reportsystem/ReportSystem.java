@@ -10,6 +10,7 @@ import me.joshh.reportsystem.events.ClickEvent;
 import me.joshh.reportsystem.functions.Report;
 import me.joshh.reportsystem.sql.MySQL;
 import me.joshh.reportsystem.sql.SQLManager;
+import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -53,6 +54,11 @@ public final class ReportSystem extends JavaPlugin {
 
         config = getConfig();
         activeReports = new HashMap<>();
+
+
+
+
+
         myFormatObj = DateTimeFormatter.ofPattern(ReportSystem.config.getString("messages.date-format"));
 
         // Setup booleans
@@ -96,6 +102,17 @@ public final class ReportSystem extends JavaPlugin {
 
         // Setup listeners
         getServer().getPluginManager().registerEvents(new ClickEvent(), this);
+
+
+        // Hopefully loads all active reports into the hashmap
+        try {
+            for(Report report : SQLManager.getReports()) {
+                System.out.println(report.getReportedUser());
+                activeReports.put(report.getReportedUser(), new ArrayList<Report>());
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 

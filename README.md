@@ -9,6 +9,8 @@ My Spigot report system. Unfinished
 - [ ] Create notification system when someone joins the server and their report has been edited (Accepted/Denied).
 - [ ] Ability to view all individual reports made on a person (this ones gonna be painful)
 - [ ] Discord Bot integration (Begun)
+- [ ] Add Status to reports (Pending, Accepted, Denied)
+- [ ] Create individual report check command (using IDs).
 
 # Less important TODO
 - [ ] Convert the entire plugin to Kotlin (don't know any)

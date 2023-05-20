@@ -226,6 +226,9 @@ public class ClickEvent implements Listener {
                     newReason[0] = reply;
 
                     player.sendMessage("§aYou have changed the reason to: " + newReason[0]);
+                    player.sendMessage("§aYou have denied the report.");
+                    player.closeInventory();
+
                     SQLManager.denyReport(report, newReason[0]);
 
                     return newReason[0];

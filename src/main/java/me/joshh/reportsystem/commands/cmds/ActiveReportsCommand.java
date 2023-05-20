@@ -91,7 +91,7 @@ public class ActiveReportsCommand implements CommandExecutor {
                                 reporter = (Player) Bukkit.getOfflinePlayer(report.getReporter());
                             }
 
-                            lore.add("§7" + reporter.getName() + " ; §e" + report.getReason() + " §8(" + timeAgo + "ago)");
+                            lore.add("§7" + reporter.getName() + " ; §e" + report.getReason() + " §8(" + timeAgo + "ago) ; §7ID: §e" + report.getID());
                             lore.add(" ");
 
 
