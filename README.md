@@ -21,5 +21,5 @@ My Spigot report system. Unfinished
 # Known bugs
 - /rs settings doesn't update
 - "prefix" variable in HoverText in ReportCommand.java is bugged (not sure if a fix is possible)
-- When accepting/denying a report, I found out another report is created with a different ID. Trying to find the cause atm
+- All Reports made for a player have the same ID
 
