@@ -1,5 +1,13 @@
-# ReportSystem
-My Spigot report system. Unfinished
+# Report System for Spigot Minecraft Servers
+## Currently supported versions: 1.8
+
+# Features
+- Ability to create reports as a player, with a custom reason
+- Ability for staff members to view all active reports, edit them, input a reason for the edit.
+- Ability for staff members to view details about a report using the ID
+- Ability for administrators to change settings, messages, commands, in a config.
+
+
 
 
 # TODO (Version 2)
@@ -23,5 +31,5 @@ My Spigot report system. Unfinished
 # Known bugs
 - /rs settings doesn't update
 - "prefix" variable in HoverText in ReportCommand.java is bugged (not sure if a fix is possible)
-- When accepting/denying a report, I found out another report is created with a different ID. Trying to find the cause atm
+- All Reports made for a player have the same ID
 
