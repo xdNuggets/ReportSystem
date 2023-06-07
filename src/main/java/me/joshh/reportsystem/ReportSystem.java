@@ -3,14 +3,13 @@ package me.joshh.reportsystem;
 
 import me.joshh.reportsystem.commands.PluginCommandManager;
 import me.joshh.reportsystem.commands.admin.ReloadSQLCommand;
-import me.joshh.reportsystem.commands.cmds.PlayerActiveReportsCommand;
-import me.joshh.reportsystem.commands.cmds.ActiveReportsCommand;
+import me.joshh.reportsystem.commands.admin.TestingCommand;
+import me.joshh.reportsystem.commands.cmds.reportcmds.ReportCommandManager;
 import me.joshh.reportsystem.commands.cmds.ReportCommand;
 import me.joshh.reportsystem.events.ClickEvent;
-import me.joshh.reportsystem.functions.Report;
+import me.joshh.reportsystem.util.Report;
 import me.joshh.reportsystem.sql.MySQL;
 import me.joshh.reportsystem.sql.SQLManager;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -21,6 +20,7 @@ import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public final class ReportSystem extends JavaPlugin {
 
@@ -44,7 +44,7 @@ public final class ReportSystem extends JavaPlugin {
     public static boolean showDate;
     public static HashMap<String, ArrayList<Report>> activeReports;
 
-    public static String prefix; // TODO: Make editable in config.yml
+    public static String prefix;
 
 
     @Override
@@ -54,8 +54,6 @@ public final class ReportSystem extends JavaPlugin {
 
         config = getConfig();
         activeReports = new HashMap<>();
-
-
 
 
 
@@ -92,27 +90,23 @@ public final class ReportSystem extends JavaPlugin {
             }
         }
 
+        // Hopefully loads all active reports into the hashmap
+        activeReports = getActiveReports();
+
         // Setup commands
         getCommand("report").setExecutor(new ReportCommand());
-        getCommand("reports").setExecutor(new ActiveReportsCommand());
+        getCommand("reports").setExecutor(new ReportCommandManager());
         getCommand("reportsystem").setExecutor(new PluginCommandManager());
-        getCommand("activereports").setExecutor(new PlayerActiveReportsCommand());
         getCommand("sql").setExecutor(new ReloadSQLCommand());
+        getCommand("test").setExecutor(new TestingCommand());
 
 
         // Setup listeners
         getServer().getPluginManager().registerEvents(new ClickEvent(), this);
 
 
-        // Hopefully loads all active reports into the hashmap
-        try {
-            for(Report report : SQLManager.getReports()) {
-                System.out.println(report.getReportedUser());
-                activeReports.put(report.getReportedUser(), new ArrayList<Report>());
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+
+
 
     }
 
@@ -125,6 +119,31 @@ public final class ReportSystem extends JavaPlugin {
         if(sounds) {
             player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1, 1);
         }
+    }
+
+
+    public static HashMap<String, ArrayList<Report>> getActiveReports() {
+        HashMap<String, ArrayList<Report>> reports = new HashMap<>();
+
+        try {
+            ArrayList<Report> allReports = SQLManager.getReports();
+
+            for (Report report : allReports) {
+                String reportedUser = report.getReportedUser();
+
+                if (reports.containsKey(reportedUser)) {
+                    reports.get(reportedUser).add(report);
+                } else {
+                    ArrayList<Report> userReports = new ArrayList<>();
+                    userReports.add(report);
+                    reports.put(reportedUser, userReports);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return reports;
     }
 
 

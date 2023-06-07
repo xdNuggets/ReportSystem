@@ -1,12 +1,11 @@
 package me.joshh.reportsystem.events;
 
 import me.joshh.reportsystem.ReportSystem;
-import me.joshh.reportsystem.functions.Report;
+import me.joshh.reportsystem.util.Report;
 import me.joshh.reportsystem.sql.SQLManager;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,7 +32,9 @@ public class ClickEvent implements Listener {
         ItemStack borderItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8);
         ItemStack denyItem = new ItemStack(Material.BARRIER, 1, (short) 7);
 
-
+        if(e.getClickedInventory().getTitle().equals("Report Info")) {
+            e.setCancelled(true);
+        }
 
 
 
@@ -94,7 +95,7 @@ public class ClickEvent implements Listener {
                     if (timeAgo.equals("")) {
                         timeAgo = "0s";
                     }
-                    infoLore.add("§7Report ID: §6" + report.getID());
+
                     infoLore.add(" ");
                     infoLore.add("§7Reported by: §a" + Bukkit.getPlayer(UUID.fromString(report.getReporter())).getName());
 
@@ -103,7 +104,7 @@ public class ClickEvent implements Listener {
 
                     ArrayList<Report> reports = ReportSystem.activeReports.get(p.getUniqueId().toString());
                     for (Report r : reports) {
-                        infoLore.add("§7- §a" + r.getReason());
+                        infoLore.add("§7- §a" + r.getReason() + " §8(§e" + r.getID() + "§8)");
                     }
                     infoMeta.setLore(infoLore);
 

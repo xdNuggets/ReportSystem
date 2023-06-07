@@ -1,7 +1,6 @@
 package me.joshh.reportsystem.commands.cmds;
 
 import me.joshh.reportsystem.ReportSystem;
-import me.joshh.reportsystem.functions.Report;
 import me.joshh.reportsystem.sql.SQLManager;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -15,9 +14,6 @@ import org.bukkit.entity.Player;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-
-import static me.joshh.reportsystem.ReportSystem.activeReports;
 
 public class ReportCommand implements CommandExecutor {
 
@@ -81,15 +77,9 @@ public class ReportCommand implements CommandExecutor {
                                 ReportSystem.sendSound(p);
 
                             }
-
                         }
                         try {
-
                             sql.createReport((Player) offlineTarget, player, reason, formattedDate);
-
-
-
-
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }

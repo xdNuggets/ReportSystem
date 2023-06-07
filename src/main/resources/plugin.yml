@@ -24,3 +24,6 @@ commands:
   activereports:
     description: Shows active reports.
     aliases: [ar]
+
+  test:
+    description: test command

@@ -2,7 +2,7 @@ package me.joshh.reportsystem.sql;
 
 
 import me.joshh.reportsystem.ReportSystem;
-import me.joshh.reportsystem.functions.Report;
+import me.joshh.reportsystem.util.Report;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -36,7 +36,7 @@ public class SQLManager {
 
     public void createReportTable() throws SQLException {
         PreparedStatement ps;
-        ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS reports (id VARCHAR(7), reporter VARCHAR(128), reported VARCHAR(128), reason VARCHAR(255), date VARCHAR(255), status VARCHAR(8) PRIMARY KEY (id))");
+        ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS reports (id VARCHAR(7), reporter VARCHAR(128), reported VARCHAR(128), reason VARCHAR(255), date VARCHAR(255), status VARCHAR(8), PRIMARY KEY (id))");
         ps.executeUpdate();
         System.out.println("Report table created successfully");
 
@@ -46,7 +46,7 @@ public class SQLManager {
     public void createAcceptedReportTable() {
         PreparedStatement ps;
         try {
-            ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS accepted_reports (id VARCHAR(7), reporter VARCHAR(128), reported VARCHAR(128), reason VARCHAR(255), date VARCHAR(255), status VARCHAR(8) PRIMARY KEY (id))");
+            ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS accepted_reports (id VARCHAR(7), reporter VARCHAR(128), reported VARCHAR(128), reason VARCHAR(255), date VARCHAR(255), status VARCHAR(8), PRIMARY KEY (id))");
             ps.executeUpdate();
             System.out.println("Accepted report table created successfully");
         } catch (SQLException e) {
@@ -57,7 +57,7 @@ public class SQLManager {
     public void createDeniedReportTable() {
         PreparedStatement ps;
         try {
-            ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS denied_reports (id VARCHAR(7), reporter VARCHAR(128), reported VARCHAR(128), reason VARCHAR(255), date VARCHAR(255), status VARCHAR(8) PRIMARY KEY (id))");
+            ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS denied_reports (id VARCHAR(7), reporter VARCHAR(128), reported VARCHAR(128), reason VARCHAR(255), date VARCHAR(255), status VARCHAR(8), PRIMARY KEY (id))");
             ps.executeUpdate();
             System.out.println("Denied report table created successfully");
         } catch (SQLException e) {
@@ -66,14 +66,11 @@ public class SQLManager {
     }
 
     public static void addReport(Player reportedPlayer, Player reporter, String reason, String date, String id) {
-        if (!activeReports.containsKey(reportedPlayer.getUniqueId().toString())) {
-            ArrayList<Report> reports = new ArrayList<>();
-            activeReports.put(reportedPlayer.getUniqueId().toString(), reports);
-            reports.add(new Report(reportedPlayer, reporter, reason, date,id ));
-        } else {
-            activeReports.get(reportedPlayer.getUniqueId().toString()).add(new Report(reportedPlayer, reporter, reason, date, id));
-        }
-
+        String reportedUUID = reportedPlayer.getUniqueId().toString();
+        ArrayList<Report> userReports = activeReports.getOrDefault(reportedUUID, new ArrayList<>());
+        Report newReport = new Report(reportedPlayer, reporter, reason, date, id);
+        userReports.add(newReport);
+        activeReports.put(reportedUUID, userReports);
     }
 
 
@@ -82,7 +79,7 @@ public class SQLManager {
     public void createReport(Player reporter, Player reported, String reason, String date) throws SQLException {
         PreparedStatement ps;
         String id = generateID(7);
-        addReport(reported, reported, reason, date,id);
+        addReport(reported, reporter, reason, date, id);
         ps = sql.getConnection().prepareStatement("INSERT INTO reports (id, reporter, reported, reason, date, status) VALUES (?, ?, ?, ?, ?, ?)");
         ps.setString(1, id);
         ps.setString(2, reporter.getUniqueId().toString());
@@ -91,16 +88,10 @@ public class SQLManager {
         ps.setString(5, date);
         ps.setString(6, "PENDING");
         ps.executeUpdate();
-
     }
 
 
-    public void deleteReport(int id) throws SQLException {
-        PreparedStatement ps;
-        ps = sql.getConnection().prepareStatement("DELETE FROM reports WHERE id = ?");
-        ps.setInt(1, id);
-        ps.executeUpdate();
-    }
+
 
     public int getID(String reported) throws SQLException {
         PreparedStatement ps;
@@ -178,20 +169,42 @@ public class SQLManager {
 
     // Gathers all active reports
     public static ArrayList<Report> getReports() throws SQLException {
-        PreparedStatement ps;
+        PreparedStatement ps = sql.getConnection().prepareStatement("SELECT * FROM reports");
 
-        ps = sql.getConnection().prepareStatement("SELECT * FROM reports");
-        System.out.println(sql);
-        if(ps == null) {
-
-            return new ArrayList<Report>();
+        if (ps == null) {
+            return new ArrayList<>();
         }
+
         ps.executeQuery();
         ArrayList<Report> reports = new ArrayList<>();
-        while(ps.getResultSet().next()) {
-            reports.add(new Report(Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reported"))), Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reporter"))), ps.getResultSet().getString("reason"), ps.getResultSet().getString("date"), ps.getResultSet().getString("id")));
+
+        while (ps.getResultSet().next()) {
+
+            String reportedUserUUID = ps.getResultSet().getString("reported");
+            String reporterUUID = ps.getResultSet().getString("reporter");
+            String reason = ps.getResultSet().getString("reason");
+            String date = ps.getResultSet().getString("date");
+            String id = ps.getResultSet().getString("id");
+
+            System.out.println("ID: " + id);
+
+            reports.add(new Report(Bukkit.getPlayer(UUID.fromString(reportedUserUUID)), Bukkit.getPlayer(UUID.fromString(reporterUUID)), reason, date, id));
         }
+
         return reports;
+    }
+
+
+    public static Report getReportWithID(String id) throws SQLException {
+        PreparedStatement ps;
+        ps = sql.getConnection().prepareStatement("SELECT * FROM reports WHERE id = ?");
+        ps.setString(1, id);
+        ps.executeQuery();
+        if(ps.getResultSet().next()) {
+            return new Report(Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reported"))), Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("reporter"))), ps.getResultSet().getString("reason"), ps.getResultSet().getString("date"), ps.getResultSet().getString("id"));
+        }else {
+            return null;
+        }
     }
 
 
