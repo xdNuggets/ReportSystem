@@ -1,0 +1,30 @@
+sql:
+  host: localhost
+  port: 3306
+  database: reportsystem
+  username: root
+  password:
+
+messages:
+  ban-command: /ipban %player% [REPORT] %reason%
+  date-format: dd/MM/yyyy HH:mm:ss
+  prefix: 'XlX5»Xr'
+  default-reason: '[REPORT] %player% - %reason%'
+
+# These are toggleable options you can enable/disable by settings the values to true/false.
+toggleable:
+  sounds: true # Enables a sound being sent to the player when they successfully report a user. A sound is also sent to the staff member when a report is made.
+  alert: true # A message is also sent to the staff member when a report is made.
+  use-ban-command: true # If enabled, the ban command will be executed when a report is accepted. The ban command is defined in the messages section above.
+  show-date: true # If enabled, the date will be shown in the report list. The date format is defined in the messages section above.
+
+
+discord-bot:
+  token: # Your bot token
+  activity-type: PLAYING # PLAYING, WATCHING, LISTENING, STREAMING, COMPETING
+
+  # If the activity type is set to STREAMING, you must also set the following. Make sure to uncomment the line below
+  # streaming-link: https://twitch.tv/discord
+
+  activity-message: Fortnite Battle Royale # The message that will be displayed in the activity.
+  status-type: ONLINE # ONLINE, IDLE, DND, INVISIBLE
