@@ -8,7 +8,7 @@ public class Report {
     private final String reported;
     private final String reason;
     private final String reporter;
-    public static String id;
+    public String id;
     String date;
 
 
