@@ -3,6 +3,7 @@ package me.joshh.reportsystem.commands;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 
 public abstract class SubCommand {
 
@@ -16,6 +17,6 @@ public abstract class SubCommand {
     public abstract String getSyntax();
 
     //code for the subcommand
-    public abstract void perform(Player player, String args[]) throws SQLException;
+    public abstract void perform(Player player, String args[]) throws SQLException, ParseException;
 
 }

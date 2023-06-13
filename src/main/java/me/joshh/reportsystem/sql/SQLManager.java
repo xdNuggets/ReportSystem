@@ -170,12 +170,15 @@ public class SQLManager {
     // Gathers all active reports
     public static ArrayList<Report> getReports() throws SQLException {
         PreparedStatement ps = sql.getConnection().prepareStatement("SELECT * FROM reports");
-
+        //PreparedStatement ps1 = sql.getConnection().prepareStatement("SELECT * FROM accepted_reports");
+        //PreparedStatement ps2 = sql.getConnection().prepareStatement("SELECT * FROM denied_reports");
         if (ps == null) {
             return new ArrayList<>();
         }
 
         ps.executeQuery();
+        //ps1.executeQuery();
+        //ps2.executeQuery();
         ArrayList<Report> reports = new ArrayList<>();
 
         while (ps.getResultSet().next()) {
@@ -190,6 +193,34 @@ public class SQLManager {
 
             reports.add(new Report(Bukkit.getPlayer(UUID.fromString(reportedUserUUID)), Bukkit.getPlayer(UUID.fromString(reporterUUID)), reason, date, id));
         }
+
+        /*while(ps1.getResultSet().next()) {
+            String reportedUserUUID = ps1.getResultSet().getString("reported");
+            String reporterUUID = ps1.getResultSet().getString("reporter");
+            String reason = ps1.getResultSet().getString("reason");
+            String date = ps1.getResultSet().getString("date");
+            String id = ps1.getResultSet().getString("id");
+
+            System.out.println("ID: " + id);
+
+            reports.add(new Report(Bukkit.getPlayer(UUID.fromString(reportedUserUUID)), Bukkit.getPlayer(UUID.fromString(reporterUUID)), reason, date, id));
+
+        }
+
+        while(ps2.getResultSet().next()) {
+            String reportedUserUUID = ps2.getResultSet().getString("reported");
+            String reporterUUID = ps2.getResultSet().getString("reporter");
+            String reason = ps2.getResultSet().getString("reason");
+            String date = ps2.getResultSet().getString("date");
+            String id = ps2.getResultSet().getString("id");
+
+            System.out.println("ID: " + id);
+
+            reports.add(new Report(Bukkit.getPlayer(UUID.fromString(reportedUserUUID)), Bukkit.getPlayer(UUID.fromString(reporterUUID)), reason, date, id));
+
+        }
+
+         */
 
         return reports;
     }

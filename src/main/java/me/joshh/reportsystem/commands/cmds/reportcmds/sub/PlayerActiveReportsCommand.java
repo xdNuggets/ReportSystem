@@ -7,17 +7,17 @@ public class PlayerActiveReportsCommand extends SubCommand {
 
     @Override
     public String getName() {
-        return "reports ";
+        return "preports";
     }
 
     @Override
     public String getDescription() {
-        return null;
+        return "Shows a player all the reports they have created.";
     }
 
     @Override
     public String getSyntax() {
-        return null;
+        return "/preports";
     }
 
     @Override

@@ -3,6 +3,7 @@ package me.joshh.reportsystem.commands.cmds.reportcmds;
 import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.commands.SubCommand;
 import me.joshh.reportsystem.commands.cmds.reportcmds.sub.ReportInfoCommand;
+import me.joshh.reportsystem.menus.impl.ReportsMenu;
 import me.joshh.reportsystem.util.ItemBuilder;
 import me.joshh.reportsystem.util.Report;
 import org.bukkit.Bukkit;
@@ -28,12 +29,13 @@ public class ReportCommandManager implements CommandExecutor {
 
     public ReportCommandManager(){
         subcommands.add(new ReportInfoCommand());
+        subcommands.add(new ReportInfoCommand());
 
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        HashMap<String, ArrayList<Report>> activeReports = ReportSystem.getActiveReports();
+
 
         if (sender instanceof Player) {
             Player p = (Player) sender;
@@ -43,93 +45,27 @@ public class ReportCommandManager implements CommandExecutor {
                     if (args[0].equalsIgnoreCase(getSubcommands().get(i).getName())) {
                         try {
                             getSubcommands().get(i).perform(p, args);
-                        } catch (SQLException e) {
+                        } catch (SQLException | ParseException e) {
                             throw new RuntimeException(e);
                         }
                     }
                 }
             } else if (args.length == 0) {
                 if (p.hasPermission("rs.manage")) {
-                    System.out.println("command has been run :)");
-                    Inventory reportInventory = Bukkit.createInventory(p, 54, "Unhandled Reports");
 
-
-                    ItemStack grayGlass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 7);
-                    ItemMeta glassMeta = grayGlass.getItemMeta();
-                    glassMeta.setDisplayName(" ");
-                    grayGlass.setItemMeta(glassMeta);
-                    for (int i = 0; i < 54; i++) {
-                        if (i < 9 || i > 44 || i % 9 == 0 || (i + 1) % 9 == 0) {
-                            reportInventory.setItem(i, grayGlass);
-                        }
-                    }
-
-                    // Add the reports to the inventory
-                    int slot = 10;
-                    int reportNum = 0;
-                    for (List<Report> reportList : activeReports.values()) {
-                        ItemBuilder book = new ItemBuilder(Material.BOOK_AND_QUILL);
-                        Player target = Bukkit.getPlayer(UUID.fromString(reportList.get(reportNum).getReportedUser()));
-                        String onlineStatus = target.isOnline() ? "§a" : "§c";
-                        book.setName(onlineStatus + target.getName());
-
-                        for (Report report : reportList) {
-                            String date = report.getDate();
-                            SimpleDateFormat myFormatObj = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-                            String now = LocalDateTime.now().format(ReportSystem.myFormatObj);
-
-                            try {
-                                Date date2 = myFormatObj.parse(date);
-                                Date date1 = myFormatObj.parse(now);
-
-                                long diff = date1.getTime() - date2.getTime();
-                                long diffSeconds = diff / 1000 % 60;
-                                long diffMinutes = diff / (60 * 1000) % 60;
-                                long diffHours = diff / (60 * 60 * 1000) % 24;
-                                long diffDays = diff / (24 * 60 * 60 * 1000);
-
-                                String timeAgo = "";
-                                if (diffDays > 0) {
-                                    timeAgo += diffDays + "d, ";
-                                }
-                                if (diffHours > 0) {
-                                    timeAgo += diffHours + "h, ";
-                                }
-                                if (diffMinutes > 0) {
-                                    timeAgo += diffMinutes + "m, ";
-                                }
-                                if (diffSeconds > 0) {
-                                    timeAgo += diffSeconds + "s ";
-                                }
-                                if (timeAgo.equals("")) {
-                                    timeAgo = "0s";
-                                }
-                                Player reporter = Bukkit.getPlayer(UUID.fromString(report.getReporter()));
-                                if (reporter == null) {
-                                    reporter = (Player) Bukkit.getOfflinePlayer(report.getReporter());
-                                }
-
-                                book.addLoreLine("§7" + reporter.getName() + " ; §e" + report.getReason() + " §8(" + timeAgo + "ago) ; §7ID: §e" + report.getID());
-                            } catch (ParseException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-
-                        reportInventory.setItem(slot, book.toItemStack());
-                        slot++;
-                        reportNum++;
-                    }
-
-                        p.openInventory(reportInventory);
-                    }
+                    new ReportsMenu(ReportSystem.getPlayerMenuUtility(p)).open();
+                } else {
+                    p.sendMessage("§cYou do not have permission to use this command.");
                 }
 
 
             }
+        }
 
-        
-        return true;
-    }
+
+            return true;
+        }
+
 
     public ArrayList<SubCommand> getSubcommands(){
         return subcommands;

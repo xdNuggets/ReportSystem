@@ -24,12 +24,11 @@
 - [ ] Convert the entire plugin to Kotlin (don't know any)
 - [ ] Possibly make this into a Bungee Plugin (not certain whether I want to do this)
 - [x] Rework ID System
-- [ ] Save reports when onDisable is ran
-- [ ] Add extra info to report info (on click probably). This will include first played, last played, and maybe alts?
+- [ ] Add extra info to report info (on click probably). This will include first played, last played, and maybe alts? (this has become a command)
 - [ ] Statistics for both staff members and players
 
 # Known bugs
 - /rs settings doesn't update
 - "prefix" variable in HoverText in ReportCommand.java is bugged (not sure if a fix is possible)
-- All Reports made for a player have the same ID
+
 

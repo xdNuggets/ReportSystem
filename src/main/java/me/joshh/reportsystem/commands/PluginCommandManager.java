@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 
 public class PluginCommandManager implements CommandExecutor {
@@ -28,6 +29,8 @@ public class PluginCommandManager implements CommandExecutor {
                         try {
                             getSubcommands().get(i).perform(p, args);
                         } catch (SQLException e) {
+                            throw new RuntimeException(e);
+                        } catch (ParseException e) {
                             throw new RuntimeException(e);
                         }
                     }

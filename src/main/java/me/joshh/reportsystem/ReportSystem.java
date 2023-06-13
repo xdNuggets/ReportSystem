@@ -6,10 +6,12 @@ import me.joshh.reportsystem.commands.admin.ReloadSQLCommand;
 import me.joshh.reportsystem.commands.admin.TestingCommand;
 import me.joshh.reportsystem.commands.cmds.reportcmds.ReportCommandManager;
 import me.joshh.reportsystem.commands.cmds.ReportCommand;
-import me.joshh.reportsystem.events.ClickEvent;
+import me.joshh.reportsystem.events.MenuListener;
+import me.joshh.reportsystem.menus.PlayerMenuUtility;
 import me.joshh.reportsystem.util.Report;
 import me.joshh.reportsystem.sql.MySQL;
 import me.joshh.reportsystem.sql.SQLManager;
+import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -20,7 +22,6 @@ import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public final class ReportSystem extends JavaPlugin {
 
@@ -46,6 +47,8 @@ public final class ReportSystem extends JavaPlugin {
 
     public static String prefix;
 
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+
 
     @Override
     public void onEnable() {
@@ -65,7 +68,7 @@ public final class ReportSystem extends JavaPlugin {
         banCommand = getConfig().getBoolean("use-ban-command");
         showDate = getConfig().getBoolean("show-date");
 
-        prefix = getConfig().getString("messages.prefix").replace("X", "§");
+        prefix = "XlX5»Xr".replace("X", "§");
 
         // Setup SQL
         sql = new MySQL();
@@ -102,7 +105,7 @@ public final class ReportSystem extends JavaPlugin {
 
 
         // Setup listeners
-        getServer().getPluginManager().registerEvents(new ClickEvent(), this);
+        getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
 
 
@@ -129,6 +132,7 @@ public final class ReportSystem extends JavaPlugin {
             ArrayList<Report> allReports = SQLManager.getReports();
 
             for (Report report : allReports) {
+
                 String reportedUser = report.getReportedUser();
 
                 if (reports.containsKey(reportedUser)) {
@@ -145,6 +149,39 @@ public final class ReportSystem extends JavaPlugin {
 
         return reports;
     }
+
+
+    public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
+        PlayerMenuUtility playerMenuUtility;
+
+        if (!(playerMenuUtilityMap.containsKey(p))) { //See if the player has a playermenuutility "saved" for them
+
+            //This player doesn't. Make one for them add it to the hashmap
+            playerMenuUtility = new PlayerMenuUtility(p);
+            playerMenuUtilityMap.put(p, playerMenuUtility);
+
+            return playerMenuUtility;
+        } else {
+            return playerMenuUtilityMap.get(p); //Return the object by using the provided player
+        }
+    }
+
+    public static String changeReason(Player player) {
+        String[] newReason = new String[1];
+        player.sendMessage("§aPlease enter the new reason in the rename field.");
+        ReportSystem.sendSound(player);
+        new AnvilGUI(ReportSystem.plugin, player, "Edit reason here", (p, reply) -> {
+            System.out.println("hi");
+            newReason[0] = reply;
+
+            player.sendMessage("§aYou have changed the reason to: " + newReason[0]);
+
+            return newReason[0];
+        });
+
+        return ReportSystem.config.getString("messages.default-reason");
+    }
+
 
 
 

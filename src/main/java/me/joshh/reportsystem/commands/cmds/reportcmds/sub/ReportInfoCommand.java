@@ -1,5 +1,6 @@
 package me.joshh.reportsystem.commands.cmds.reportcmds.sub;
 
+import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.commands.SubCommand;
 import me.joshh.reportsystem.sql.SQLManager;
 import me.joshh.reportsystem.util.ItemBuilder;
@@ -12,6 +13,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.UUID;
 
 public class ReportInfoCommand extends SubCommand {
     @Override
@@ -30,7 +33,7 @@ public class ReportInfoCommand extends SubCommand {
     }
 
     @Override
-    public void perform(Player player, String[] args) throws SQLException {
+    public void perform(Player player, String[] args) throws SQLException, ParseException {
         Inventory inv = Bukkit.createInventory(player, 27, "Report Info");
 
         // Setup Items
@@ -42,10 +45,13 @@ public class ReportInfoCommand extends SubCommand {
         reportInfo.setName("Report: " + args[1]);
         reportInfo.addLoreLine(" ");
         Report report = SQLManager.getReportWithID(args[1]);
-        reportInfo.addLoreLine("Reported Player: " + report.getReportedUser());
-        reportInfo.addLoreLine("Reported By: " + report.getReporter());
-        reportInfo.addLoreLine("Reason: " + report.getReason());
-        reportInfo.addLoreLine("Date: " + report.getDate());
+        Player reportedPlayer = Bukkit.getPlayer(UUID.fromString(report.getReportedUser()));
+        Player reporter = Bukkit.getPlayer(UUID.fromString(report.getReporter()));
+
+        reportInfo.addLoreLine(ReportSystem.prefix + " §eReported User: §a" + reportedPlayer.getName());
+        reportInfo.addLoreLine(ReportSystem.prefix + " §eReported By: §a" + reporter.getName());
+        reportInfo.addLoreLine(ReportSystem.prefix + " §eReason: §a" + report.getReason());
+        reportInfo.addLoreLine(ReportSystem.prefix + " §eCreated at: §a" + report.getDate() + " §e; §8Created " + report.getTimeSinceCreation() + " ago.");
         // reportInfo.addLoreLine("Status: " + report.getStatus()); TODO: Add xd
 
         ItemStack reportInfoItem = reportInfo.toItemStack();
