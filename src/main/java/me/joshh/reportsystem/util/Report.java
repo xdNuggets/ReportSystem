@@ -1,12 +1,14 @@
 package me.joshh.reportsystem.util;
 
 import me.joshh.reportsystem.ReportSystem;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 public class Report {
 
@@ -27,8 +29,8 @@ public class Report {
 
     }
 
-    public String getReportedUser() {
-        return reported;
+    public Player getReportedUser() {
+        return Bukkit.getPlayer(UUID.fromString(reported));
     }
 
     public String getReason() {
@@ -39,8 +41,8 @@ public class Report {
         return date;
     }
 
-    public String getReporter() {
-        return reporter;
+    public Player getReporter() {
+        return Bukkit.getPlayer(UUID.fromString(reporter));
     }
 
     public String getID() {

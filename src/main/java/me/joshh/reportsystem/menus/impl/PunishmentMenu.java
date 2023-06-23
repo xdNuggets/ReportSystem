@@ -36,7 +36,7 @@ public class PunishmentMenu extends Menu {
     @Override
     public void handleMenu(InventoryClickEvent e) {
         String reportedUser = e.getInventory().getTitle().replace("§7", "").replace("'s Report", "");
-        Report report = null;
+        Report report;
         try {
             report = SQLManager.getReportByReported(reportedUser);
         } catch (SQLException ex) {
@@ -67,7 +67,7 @@ public class PunishmentMenu extends Menu {
     }
 
     @Override
-    public void setMenuItems() throws ParseException {
+    public void setMenuItems() {
         ItemStack borderItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8);
         String reportedUser = getInventory().getTitle().replace("§7", "").replace("'s Report", "");
         ItemStack warnItem = new ItemStack(Material.PAPER);

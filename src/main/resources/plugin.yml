@@ -27,3 +27,7 @@ commands:
 
   test:
     description: test command
+
+  linkaccount:
+    description: lets you link your account to your discord account.
+    aliases: [link, linkacc]

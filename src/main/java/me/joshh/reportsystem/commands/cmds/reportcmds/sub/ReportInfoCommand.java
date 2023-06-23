@@ -45,8 +45,8 @@ public class ReportInfoCommand extends SubCommand {
         reportInfo.setName("Report: " + args[1]);
         reportInfo.addLoreLine(" ");
         Report report = SQLManager.getReportWithID(args[1]);
-        Player reportedPlayer = Bukkit.getPlayer(UUID.fromString(report.getReportedUser()));
-        Player reporter = Bukkit.getPlayer(UUID.fromString(report.getReporter()));
+        Player reportedPlayer = report.getReportedUser();
+        Player reporter = report.getReporter();
 
         reportInfo.addLoreLine(ReportSystem.prefix + " §eReported User: §a" + reportedPlayer.getName());
         reportInfo.addLoreLine(ReportSystem.prefix + " §eReported By: §a" + reporter.getName());

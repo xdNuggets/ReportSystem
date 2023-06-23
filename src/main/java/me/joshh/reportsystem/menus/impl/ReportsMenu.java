@@ -9,6 +9,7 @@ import me.joshh.reportsystem.util.Report;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
@@ -90,7 +91,7 @@ public class ReportsMenu extends PaginatedMenu {
             ItemBuilder book = new ItemBuilder(Material.BOOK_AND_QUILL);
 
             for (Report report : reportList) {
-                Player target = Bukkit.getPlayer(UUID.fromString(report.getReportedUser()));
+                Player target = report.getReportedUser();
 
                 String onlineStatus = target.isOnline() ? "§a" : "§c";
                 book.setName(onlineStatus + target.getName());
@@ -99,10 +100,8 @@ public class ReportsMenu extends PaginatedMenu {
 
                 try {
                     String timeAgo = report.getTimeSinceCreation();
-                    Player reporter = Bukkit.getPlayer(UUID.fromString(report.getReporter()));
-                    if (reporter == null) {
-                        reporter = (Player) Bukkit.getOfflinePlayer(report.getReporter());
-                    }
+                    Player reporter = report.getReporter();
+
 
                     book.addLoreLine("§7" + reporter.getName() + " ; §e" + report.getReason() + " §8(" + timeAgo + "ago) ; §7ID: §e" + report.getID());
                 } catch (ParseException e) {

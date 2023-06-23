@@ -2,6 +2,7 @@ package me.joshh.reportsystem.commands.cmds;
 
 import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.sql.SQLManager;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -73,7 +74,11 @@ public class ReportCommand implements CommandExecutor {
 
                         for (Player p : player.getServer().getOnlinePlayers()) {
                             if (p.hasPermission("rs.alert")) {
-                                sendStaffAlert(p, reason, formattedDate, (Player) offlineTarget, player);
+                                try {
+                                    sendStaffAlert(p, reason, formattedDate, (Player) offlineTarget, player);
+                                } catch (SQLException e) {
+                                    throw new RuntimeException(e);
+                                }
                                 ReportSystem.sendSound(p);
 
                             }
@@ -95,7 +100,11 @@ public class ReportCommand implements CommandExecutor {
                     for(Player p : player.getServer().getOnlinePlayers()) {
                         if(p.hasPermission("rs.alert")) {
                             // Send message to staff
-                            sendStaffAlert(p, reason, formattedDate, reportedPlayer, player);
+                            try {
+                                sendStaffAlert(p, reason, formattedDate, reportedPlayer, player);
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            }
                             ReportSystem.sendSound(p);
 
                         }
@@ -135,13 +144,16 @@ public class ReportCommand implements CommandExecutor {
         player.spigot().sendMessage(message);
     }
 
-    private void sendStaffAlert(Player player, String reason, String formattedDate, Player reportedPlayer, Player reporter) {
+    private void sendStaffAlert(Player player, String reason, String formattedDate, Player reportedPlayer, Player reporter) throws SQLException {
 
         TextComponent message = new TextComponent("§e(!) " + reporter.getName() + " reported §c" + reportedPlayer.getName() + "§e for §a" + reason);
         message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("§6Information\n" +
                 prefix + " §fReported by " + prefix + "§f " + reporter.getName() + "\n" +
                 "\n" + prefix + " Reason " + prefix + " " + reason + "\n" +
-                "\n" + prefix + " Reported at " + prefix + " " + formattedDate).create()));
+                "\n" + prefix + " Reported at " + prefix + " " + formattedDate +
+                "\n" + "§8Click to copy ID to clipboard").create()));
+
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, new SQLManager().getID(reportedPlayer.getUniqueId().toString())));
 
         player.spigot().sendMessage(message);
     }

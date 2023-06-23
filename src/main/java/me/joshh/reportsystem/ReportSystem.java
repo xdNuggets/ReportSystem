@@ -4,8 +4,10 @@ package me.joshh.reportsystem;
 import me.joshh.reportsystem.commands.PluginCommandManager;
 import me.joshh.reportsystem.commands.admin.ReloadSQLCommand;
 import me.joshh.reportsystem.commands.admin.TestingCommand;
+import me.joshh.reportsystem.commands.cmds.LinkAccountCommand;
 import me.joshh.reportsystem.commands.cmds.reportcmds.ReportCommandManager;
 import me.joshh.reportsystem.commands.cmds.ReportCommand;
+import me.joshh.reportsystem.discord.Bot;
 import me.joshh.reportsystem.events.MenuListener;
 import me.joshh.reportsystem.menus.PlayerMenuUtility;
 import me.joshh.reportsystem.util.Report;
@@ -77,7 +79,7 @@ public final class ReportSystem extends JavaPlugin {
             getLogger().info("Connected to MySQL database");
 
         } catch (SQLException e) {
-            getLogger().info("Failed to connect to MySQL database");
+            getLogger().warning("Failed to connect to MySQL database");
         }
 
         if(sql.isConnected()) {
@@ -87,6 +89,7 @@ public final class ReportSystem extends JavaPlugin {
                 sqls.createReportTable();
                 sqls.createAcceptedReportTable();
                 sqls.createDeniedReportTable();
+                sqls.createDiscordTable();
 
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -102,12 +105,34 @@ public final class ReportSystem extends JavaPlugin {
         getCommand("reportsystem").setExecutor(new PluginCommandManager());
         getCommand("sql").setExecutor(new ReloadSQLCommand());
         getCommand("test").setExecutor(new TestingCommand());
+        getCommand("linkaccount").setExecutor(new LinkAccountCommand());
 
 
         // Setup listeners
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
+        // Discord bot
+        System.out.println(config.getString("discord-bot.token").length());
+        try {
+            new Bot(config.getString("discord-bot.token")).start();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        /*if(!config.getString("discord-bot.token").isEmpty()) {
+            if(!config.getString("discord-bot.guild-id").isEmpty()) return;
 
+            try {
+                new Bot().start();
+                getLogger().info("Discord Bot successfully started.");
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+        } else {
+            getLogger().warning("Some required values for the Discord Bot are empty/invalid. Please correct them in the config.yml. Discord Bot has not been started");
+        }
+
+         */
 
 
 
@@ -133,7 +158,7 @@ public final class ReportSystem extends JavaPlugin {
 
             for (Report report : allReports) {
 
-                String reportedUser = report.getReportedUser();
+                String reportedUser = report.getReportedUser().getUniqueId().toString();
 
                 if (reports.containsKey(reportedUser)) {
                     reports.get(reportedUser).add(report);

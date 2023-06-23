@@ -56,9 +56,9 @@ public class PlayerReportsInfoCommand extends SubCommand {
             ItemBuilder book = new ItemBuilder(Material.BOOK_AND_QUILL);
 
             for (Report report : reportList) {
-                Player reporter = Bukkit.getPlayer(UUID.fromString(report.getReporter()));
+                Player reporter = report.getReporter();
                 if(reporter.getName() == p.getName()) {
-                    Player target = Bukkit.getPlayer(UUID.fromString(report.getReportedUser()));
+                    Player target = report.getReportedUser();
 
                     String onlineStatus = target.isOnline() ? "§a" : "§c";
                     book.setName(onlineStatus + target.getName());

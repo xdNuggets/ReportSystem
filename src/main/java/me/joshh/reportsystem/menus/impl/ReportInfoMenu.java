@@ -39,7 +39,7 @@ public class ReportInfoMenu extends Menu {
     public void handleMenu(InventoryClickEvent e) {
         switch(e.getCurrentItem().getType()) {
             case BOOK_AND_QUILL:
-                new PunishmentMenu(ReportSystem.getPlayerMenuUtility((Player) e.getWhoClicked()), Bukkit.getPlayer(UUID.fromString(report.getReportedUser()))).open();
+                new PunishmentMenu(ReportSystem.getPlayerMenuUtility((Player) e.getWhoClicked()), report.getReportedUser()).open();
                 break;
             case BARRIER:
                 if(e.getCurrentItem().getItemMeta().getDisplayName() == "§cDeny this report.") {
@@ -68,8 +68,8 @@ public class ReportInfoMenu extends Menu {
     }
 
     @Override
-    public void setMenuItems() throws ParseException {
-        Player reportedName = Bukkit.getPlayer(UUID.fromString(report.getReportedUser()));
+    public void setMenuItems() {
+        Player reportedName = report.getReportedUser();
 
         ItemStack borderItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8);
         ItemStack denyItem = new ItemStack(Material.BARRIER, 1, (short) 7);
@@ -85,10 +85,10 @@ public class ReportInfoMenu extends Menu {
         ArrayList<String> infoLore = new ArrayList<>();
 
 
-        String timeAgo = report.getTimeSinceCreation();
+
         infoLore.add(" ");
         infoLore.add("§7Status: " + (reportedName.isOnline() ? "§aOnline" : "§cOffline"));
-        infoLore.add("§7Reported by: §a" + Bukkit.getPlayer(UUID.fromString(report.getReporter())).getName());
+        infoLore.add("§7Reported by: §a" + report.getReporter().getName());
         infoLore.add("§7Reported reason(s):");
 
         ArrayList<Report> reports = ReportSystem.activeReports.get(reportedName.getUniqueId().toString());

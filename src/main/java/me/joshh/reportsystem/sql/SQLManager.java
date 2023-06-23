@@ -17,7 +17,7 @@ import static me.joshh.reportsystem.ReportSystem.activeReports;
 public class SQLManager {
 
     private static final MySQL sql = ReportSystem.sql;
-    private static String generateID(int length) {
+    public static String generateID(int length) {
         String alphanumericCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
 
         StringBuffer randomString = new StringBuffer(length);
@@ -93,15 +93,15 @@ public class SQLManager {
 
 
 
-    public int getID(String reported) throws SQLException {
+    public String getID(String reported) throws SQLException {
         PreparedStatement ps;
         ps = sql.getConnection().prepareStatement("SELECT id FROM reports WHERE reported = ?");
         ps.setString(1, reported);
         ps.executeQuery();
         if(ps.getResultSet().next()) {
-            return ps.getResultSet().getInt("id");
+            return ps.getResultSet().getString("id");
         }else {
-            return 0;
+            return "";
         }
     }
 
@@ -128,8 +128,8 @@ public class SQLManager {
 
             ps = ReportSystem.sql.getConnection().prepareStatement("INSERT INTO accepted_reports (id, reporter, reported, reason, date, status) VALUES (?, ?, ?, ?, ?, ?)");
             ps.setString(1, report.getID());
-            ps.setString(2, report.getReporter());
-            ps.setString(3, report.getReportedUser());
+            ps.setString(2, report.getReporter().getUniqueId().toString());
+            ps.setString(3, report.getReportedUser().getUniqueId().toString());
             ps.setString(4, reason);
             ps.setString(5, report.getDate());
             ps.setString(6, "ACCEPTED");
@@ -153,8 +153,8 @@ public class SQLManager {
 
             ps = ReportSystem.sql.getConnection().prepareStatement("INSERT INTO denied_reports (id, reporter, reported, reason, date, status) VALUES (?, ?, ?, ?, ?, ?)");
             ps.setString(1, report.getID());
-            ps.setString(2, report.getReporter());
-            ps.setString(3, report.getReportedUser());
+            ps.setString(2, report.getReporter().getUniqueId().toString());
+            ps.setString(3, report.getReportedUser().getUniqueId().toString());
             ps.setString(4, reason);
             ps.setString(5, report.getDate());
             ps.setString(6, "DENIED");
@@ -167,7 +167,8 @@ public class SQLManager {
         }
     }
 
-    // Gathers all active reports
+    // Gathers all reports across all databases
+    // TODO: Add Status parameter to Report, then uncomment everything
     public static ArrayList<Report> getReports() throws SQLException {
         PreparedStatement ps = sql.getConnection().prepareStatement("SELECT * FROM reports");
         //PreparedStatement ps1 = sql.getConnection().prepareStatement("SELECT * FROM accepted_reports");
@@ -236,6 +237,50 @@ public class SQLManager {
         }else {
             return null;
         }
+    }
+
+
+
+    // Discord
+
+    public void createDiscordTable() {
+        PreparedStatement ps;
+        try {
+            ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS discord_linked_accounts (discordID VARCHAR(100), minecraftUUID VARCHAR(128), token VARCHAR(10), linked VARCHAR(6), PRIMARY KEY (discordID))");
+            ps.executeUpdate();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
+
+    public static String getDiscordLinkToken(Player player) throws SQLException {
+        String uuid = player.getUniqueId().toString();
+        PreparedStatement ps;
+
+        ps = sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID = ?");
+        return ps.getResultSet().getString("token");
+
+    }
+
+    public static Player getPlayerViaToken(String token) throws SQLException {
+        PreparedStatement ps;
+        ps = sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE token = ?");
+        ps.setString(1, token);
+        return Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("minecraftUUID")));
+    }
+
+    public static boolean isMCLinked(Player player) {
+        String uuid = player.getUniqueId().toString();
+        PreparedStatement ps;
+        try {
+            ps = sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID = ?");
+            ps.setString(1, uuid);
+            ps.executeQuery();
+            return ps.getResultSet().next();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return false;
     }
 
 
