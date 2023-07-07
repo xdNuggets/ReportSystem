@@ -61,7 +61,6 @@ public final class ReportSystem extends JavaPlugin {
         activeReports = new HashMap<>();
 
 
-
         myFormatObj = DateTimeFormatter.ofPattern(ReportSystem.config.getString("messages.date-format"));
 
         // Setup booleans
@@ -112,9 +111,10 @@ public final class ReportSystem extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
         // Discord bot
-        System.out.println(config.getString("discord-bot.token").length());
+
         try {
             new Bot(config.getString("discord-bot.token")).start();
+            getLogger().info("Discord Bot successfully started.");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -140,7 +140,8 @@ public final class ReportSystem extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        Bot.jda.shutdownNow();
+        getLogger().info("Discord Bot successfully shutdown.");
     }
 
     public static void sendSound(Player player) {

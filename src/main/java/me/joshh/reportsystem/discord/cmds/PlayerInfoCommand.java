@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
@@ -18,9 +19,9 @@ public class PlayerInfoCommand extends ListenerAdapter {
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
         if(event.getName().equals("info")) {
-            Player player = Bukkit.getPlayer(event.getOption("username").getAsString());
+            String name = event.getOption("username").getAsString();
+            Player player = (Bukkit.getPlayer(name) == null ? Bukkit.getPlayer(name) : (Player) Bukkit.getOfflinePlayer(name));
             EmbedBuilder embed = new EmbedBuilder();
-
 
             embed.setTitle("Player Information");
             embed.setColor(Bot.color);
@@ -28,7 +29,7 @@ public class PlayerInfoCommand extends ListenerAdapter {
             embed.addField("Username", player.getName(), false);
             embed.addField("Online:", player.isOnline() ? "Yes" : "No", false);
             // TODO: Let admins add fields to this embed through the config
-            embed.setThumbnail("https://minotar.net/avatar/" + player.getName());
+            embed.setThumbnail("https://mc-heads.net/avatar/" + player.getName());
 
             event.replyEmbeds(embed.build()).queue();
 

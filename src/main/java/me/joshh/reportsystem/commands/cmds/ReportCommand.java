@@ -153,7 +153,7 @@ public class ReportCommand implements CommandExecutor {
                 "\n" + prefix + " Reported at " + prefix + " " + formattedDate +
                 "\n" + "§8Click to copy ID to clipboard").create()));
 
-        message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, new SQLManager().getID(reportedPlayer.getUniqueId().toString())));
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, SQLManager.getID(reportedPlayer.getUniqueId().toString())));
 
         player.spigot().sendMessage(message);
     }

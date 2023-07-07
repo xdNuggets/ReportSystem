@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -93,7 +94,7 @@ public class SQLManager {
 
 
 
-    public String getID(String reported) throws SQLException {
+    public static String getID(String reported) throws SQLException {
         PreparedStatement ps;
         ps = sql.getConnection().prepareStatement("SELECT id FROM reports WHERE reported = ?");
         ps.setString(1, reported);
@@ -246,7 +247,7 @@ public class SQLManager {
     public void createDiscordTable() {
         PreparedStatement ps;
         try {
-            ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS discord_linked_accounts (discordID VARCHAR(100), minecraftUUID VARCHAR(128), token VARCHAR(10), linked VARCHAR(6), PRIMARY KEY (discordID))");
+            ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS discord_linked_accounts (discordID VARCHAR(100), minecraftUUID VARCHAR(128), token VARCHAR(10), linked BOOLEAN, PRIMARY KEY (discordID))");
             ps.executeUpdate();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -256,9 +257,14 @@ public class SQLManager {
     public static String getDiscordLinkToken(Player player) throws SQLException {
         String uuid = player.getUniqueId().toString();
         PreparedStatement ps;
-
-        ps = sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID = ?");
-        return ps.getResultSet().getString("token");
+        ps = sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID=?");
+        ps.setString(1, uuid);
+        ps.executeQuery();
+        if(ps.getResultSet().next()) {
+            return ps.getResultSet().getString("token");
+        }else {
+            return null;
+        }
 
     }
 
@@ -266,7 +272,13 @@ public class SQLManager {
         PreparedStatement ps;
         ps = sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE token = ?");
         ps.setString(1, token);
-        return Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("minecraftUUID")));
+        ps.executeQuery();
+        ResultSet rs = ps.getResultSet();
+        if(rs.next()) {
+            return Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("minecraftUUID")));
+        }else {
+            return null;
+        }
     }
 
     public static boolean isMCLinked(Player player) {
@@ -276,7 +288,11 @@ public class SQLManager {
             ps = sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID = ?");
             ps.setString(1, uuid);
             ps.executeQuery();
-            return ps.getResultSet().next();
+            if(ps.getResultSet().next()) {
+                return ps.getResultSet().getBoolean("linked");
+            }else {
+                return false;
+            }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

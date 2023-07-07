@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LinkAccountCmd extends ListenerAdapter {
@@ -23,22 +24,27 @@ public class LinkAccountCmd extends ListenerAdapter {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
-            System.out.println("User: " + user);
+
             if(user.isLinked()) {
                 event.reply("Your account is already linked!").setEphemeral(true).queue();
 
             } else {
                 try {
                     String token = event.getOption("token").getAsString();
-                    System.out.println("Token: " + token);
                     Player player = SQLManager.getPlayerViaToken(token);
-                    if(player.isOnline()) return;
+                    assert player != null;
+                    if(isMCAccountLinked(player)) {
+                        event.reply("This account is already linked to another discord account!").setEphemeral(true).queue();
+                        return;
+                    }
 
-                    if(token.equals(SQLManager.getDiscordLinkToken(player))) {
-                        user.linkAccount(event.getUser(), player);
-                        event.reply("Your account has been linked!").setEphemeral(true).queue();
-                    } else {
-                        event.reply("Invalid token!").setEphemeral(true).queue();
+                    if(player.isOnline() && !isMCAccountLinked(player)) {
+                        if (token.equals(SQLManager.getDiscordLinkToken(player))) {
+                            user.linkAccount(event.getUser(), player);
+                            event.reply("Your account has been linked!").setEphemeral(true).queue();
+                        } else {
+                            event.reply("Invalid token!").setEphemeral(true).queue();
+                        }
                     }
 
 
@@ -51,8 +57,13 @@ public class LinkAccountCmd extends ListenerAdapter {
 
 
     private boolean isMCAccountLinked(Player player) throws SQLException {
+        System.out.println(player.getName());
         PreparedStatement ps = ReportSystem.sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID=?");
         ps.setString(1, player.getUniqueId().toString());
-        return ps.executeQuery().next();
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return rs.getBoolean("linked");
+        }
+        return false;
     }
 }

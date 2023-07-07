@@ -16,8 +16,8 @@ public class ReportInfoCmd extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        System.out.println(ReportSystem.config.getString("discord.staff-role-id"));
-        Role role = event.getGuild().getRoleById(ReportSystem.config.getString("discord.staff-role-id"));
+        System.out.println(ReportSystem.config.getString("discord-bot.staff-role-id"));
+        Role role = event.getGuild().getRoleById(ReportSystem.config.getString("discord-bot.staff-role-id"));
         if(event.getMember().getRoles().contains(role)) {
             if(event.getName().equals("reportinfo")) {
                 Report report;

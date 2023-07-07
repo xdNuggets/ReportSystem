@@ -42,9 +42,6 @@ public class Bot {
         jda.getPresence().setActivity(Activity.of(type, config.getString("discord-bot.activity-message")));
         jda.getPresence().setStatus(OnlineStatus.fromKey(config.getString("discord-bot.status-type")));
 
-        System.out.println("Discord bot has been initialized!");
-
-
         // Events
         jda.addEventListener(new LinkAccountCmd());
         jda.addEventListener(new PlayerInfoCommand());
@@ -67,6 +64,8 @@ public class Bot {
         guild.upsertCommand("reportinfo", "Get information about a report!")
                 .addOption(OptionType.STRING, "report-id", "The report's ID", true)
                 .queue();
+
+
     }
 
 

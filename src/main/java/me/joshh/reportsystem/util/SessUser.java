@@ -46,8 +46,9 @@ public class SessUser implements Player {
     public static SessUser getSessUser(String discordID) throws SQLException {
         PreparedStatement ps = ReportSystem.sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE discordID=?");
         ps.setString(1, discordID);
-        if(ps.executeQuery().next()) {
-            return new SessUser(Bukkit.getPlayer(UUID.fromString(ps.executeQuery().getString("uuid"))), Bot.jda.getUserById(discordID));
+        ps.executeQuery();
+        if(ps.getResultSet().next()) {
+            return new SessUser(Bukkit.getPlayer(UUID.fromString(ps.getResultSet().getString("minecraftUUID"))), Bot.jda.getUserById(discordID));
         }
         else {
             return new SessUser(null, Bot.jda.getUserById(discordID));
@@ -63,10 +64,10 @@ public class SessUser implements Player {
     public void linkAccount(User user, Player player) throws SQLException {
         this.discordUser = user;
         // do the other shenanigans
-        PreparedStatement ps = ReportSystem.sql.getConnection().prepareStatement("INSERT INTO discord_linked_accounts (discordID, minecraftUUID, linked) VALUES (?, ?, ?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, player.getUniqueId().toString());
-        ps.setString(3, "true");
+        PreparedStatement ps = ReportSystem.sql.getConnection().prepareStatement("UPDATE discord_linked_accounts SET linked=?, discordID=? WHERE minecraftUUID=?");
+        ps.setString(2, user.getId());
+        ps.setBoolean(1, true);
+        ps.setString(3, player.getUniqueId().toString());
         ps.executeUpdate();
         this.isLinked = true;
         this.player = player;

@@ -21,15 +21,14 @@ toggleable:
 # Values regarding the discord bot. Some features won't work if these are left blank.
 discord-bot:
   # The token of the discord bot. This is the most important part of the discord bot. If this is left blank, the bot won't work.
-  token: MTEyMDcyNTIzMzEwMDQwMjc3OQ.GlX09L.OnBo6265eHeRpdk8yTSaxoriVBze3Cp0PXKwWs
-
+  token:
 
   # The ID of your server.
-  guild-id: 1120726493178380388
+  guild-id:
 
 
   # The color of the embeds. This does not apply to the alert system embeds. Default is blue.
-  embed-color: red
+  embed-color: blue
 
 
   # The activity type of the discord bot. This can be PLAYING, WATCHING, LISTENING, STREAMING, COMPETING. Example: "Playing Minecraft"
@@ -48,7 +47,7 @@ discord-bot:
   status-type: ONLINE
 
   # the id of the channel where alerts will be sent. If left blank, alerts will not be sent.
-  alerts-channel-id: 1120726550199935117
+  alerts-channel-id:
 
   # the id of the role which allows users to use moderator commands. If left blank, these commands won't work.
-  staff-role-id: 1120726685176827925
+  staff-role-id:
