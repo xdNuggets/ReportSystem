@@ -30,5 +30,5 @@
 # Known bugs
 - /rs settings doesn't update
 - "prefix" variable in HoverText in ReportCommand.java is bugged (not sure if a fix is possible)
-
+- No commands will work if a player is offline. Not sure how im gonna tackle this
 
