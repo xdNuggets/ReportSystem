@@ -15,7 +15,7 @@ public class TestingCommand implements CommandExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if(commandSender instanceof Player) {
             Player player = (Player) commandSender;
-            HashMap<String, ArrayList<Report>> reportMap = ReportSystem.getActiveReports();
+            HashMap<String, ArrayList<Report>> reportMap = ReportSystem.getInstance().getActiveReports();
 
             System.out.println(reportMap.values().size());
             for(String s1 : reportMap.keySet()) {

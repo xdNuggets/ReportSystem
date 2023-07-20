@@ -2,7 +2,11 @@ package me.joshh.reportsystem.commands.cmds.reportcmds;
 
 import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.commands.SubCommand;
+import me.joshh.reportsystem.commands.cmds.reportcmds.sub.PlayerActiveReportsCommand;
+import me.joshh.reportsystem.commands.cmds.reportcmds.sub.PlayerReportsInfoCommand;
 import me.joshh.reportsystem.commands.cmds.reportcmds.sub.ReportInfoCommand;
+import me.joshh.reportsystem.commands.cmds.reportcmds.sub.ReportsHelpCommand;
+import me.joshh.reportsystem.menus.impl.PlayerReportsInfoMenu;
 import me.joshh.reportsystem.menus.impl.ReportsMenu;
 import me.joshh.reportsystem.util.ItemBuilder;
 import me.joshh.reportsystem.util.Report;
@@ -29,7 +33,9 @@ public class ReportCommandManager implements CommandExecutor {
 
     public ReportCommandManager(){
         subcommands.add(new ReportInfoCommand());
-        subcommands.add(new ReportInfoCommand());
+        subcommands.add(new ReportsHelpCommand());
+        subcommands.add(new PlayerActiveReportsCommand());
+        subcommands.add(new PlayerReportsInfoCommand());
 
     }
 
@@ -53,7 +59,7 @@ public class ReportCommandManager implements CommandExecutor {
             } else if (args.length == 0) {
                 if (p.hasPermission("rs.manage")) {
 
-                    new ReportsMenu(ReportSystem.getPlayerMenuUtility(p)).open();
+                    new ReportsMenu(ReportSystem.getInstance().getPlayerMenuUtility(p)).open();
                 } else {
                     p.sendMessage("§cYou do not have permission to use this command.");
                 }

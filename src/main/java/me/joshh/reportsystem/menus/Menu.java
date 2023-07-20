@@ -23,6 +23,7 @@ public abstract class Menu implements InventoryHolder {
 
 
 
+
     //Constructor for Menu. Pass in a PlayerMenuUtility so that
     // we have information on who's menu this is and
     // what info is to be transfered

@@ -33,26 +33,22 @@ public class SettingsMenu extends Menu {
 
             case PAPER:
                 ReportSystem.messages = !ReportSystem.messages;
-                p.closeInventory();
-                new SettingsMenu(ReportSystem.getPlayerMenuUtility(p)).open();
+                p.updateInventory();
                 break;
 
             case NOTE_BLOCK:
                 ReportSystem.sounds = !ReportSystem.sounds;
-                p.closeInventory();
-                new SettingsMenu(ReportSystem.getPlayerMenuUtility(p)).open();
+                p.updateInventory();
                 break;
 
             case WATCH:
                 ReportSystem.showDate = !ReportSystem.showDate;
-                p.closeInventory();
-                new SettingsMenu(ReportSystem.getPlayerMenuUtility(p)).open();
+                p.updateInventory();
                 break;
 
             case BOOK_AND_QUILL:
                 ReportSystem.banCommand = !ReportSystem.banCommand;
-                p.closeInventory();
-                new SettingsMenu(ReportSystem.getPlayerMenuUtility(p)).open();
+                p.updateInventory();
                 break;
 
             case STAINED_GLASS_PANE:

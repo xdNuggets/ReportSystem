@@ -32,7 +32,7 @@ public class SettingsCommand extends SubCommand {
     @Override
     public void perform(Player player, String[] args) {
         if(player.hasPermission("reportsystem.admin")) {
-            new SettingsMenu(ReportSystem.getPlayerMenuUtility(player)).open();
+            new SettingsMenu(ReportSystem.getInstance().getPlayerMenuUtility(player)).open();
 
         } else {
             player.sendMessage("§c(!) You do not have permission to use this command.");

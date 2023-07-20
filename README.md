@@ -30,5 +30,6 @@
 # Known bugs
 - /rs settings doesn't update
 - "prefix" variable in HoverText in ReportCommand.java is bugged (not sure if a fix is possible)
+- 
 
 

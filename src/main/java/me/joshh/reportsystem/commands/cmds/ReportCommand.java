@@ -84,7 +84,7 @@ public class ReportCommand implements CommandExecutor {
                             }
                         }
                         try {
-                            sql.createReport((Player) offlineTarget, player, reason, formattedDate);
+                            sql.createSQLReport((Player) offlineTarget, player, reason, formattedDate);
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -111,7 +111,7 @@ public class ReportCommand implements CommandExecutor {
                     }
 
                     try {
-                        sql.createReport(player, reportedPlayer, reason, formattedDate);
+                        sql.createSQLReport(player, reportedPlayer, reason, formattedDate);
 
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -153,7 +153,7 @@ public class ReportCommand implements CommandExecutor {
                 "\n" + prefix + " Reported at " + prefix + " " + formattedDate +
                 "\n" + "§8Click to copy ID to clipboard").create()));
 
-        message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, SQLManager.getID(reportedPlayer.getUniqueId().toString())));
+        message.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, ReportSystem.getInstance().getSQLManager().getIDFromReportedUser(reportedPlayer.getUniqueId().toString())));
 
         player.spigot().sendMessage(message);
     }

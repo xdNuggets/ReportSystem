@@ -19,9 +19,9 @@ public class LinkAccountCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         Player player = (commandSender instanceof Player ? (Player) commandSender : null);
-        String token = SQLManager.generateID(7);
+        String token = ReportSystem.getInstance().getSQLManager().generateID(7);
         assert player != null;
-        if(SQLManager.isMCLinked(player)) {
+        if(ReportSystem.getInstance().getSQLManager().isMCLinked(player)) {
             player.sendMessage("§cYour account is already linked!");
             return false;
         }

@@ -1,8 +1,15 @@
 package me.joshh.reportsystem.events;
 
 import me.joshh.reportsystem.menus.Menu;
+import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.FishHook;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
@@ -31,4 +38,7 @@ public class MenuListener implements Listener {
         }
 
     }
+
+
+
 }

@@ -22,7 +22,7 @@ import java.util.UUID;
 
 public class ReportsMenu extends PaginatedMenu {
 
-    HashMap<String, ArrayList<Report>> activeReports = ReportSystem.getActiveReports();
+    HashMap<String, ArrayList<Report>> activeReports = ReportSystem.getInstance().getActiveReports();
 
     public ReportsMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
@@ -48,13 +48,13 @@ public class ReportsMenu extends PaginatedMenu {
             Player p = (Bukkit.getPlayer(reportedName).isOnline() ? Bukkit.getPlayer(reportedName) : (Player) Bukkit.getOfflinePlayer(reportedName));
             Report report = null;
             try {
-                report = SQLManager.getReportByReported(p.getName());
+                report = ReportSystem.getInstance().getSQLManager().getReportByReported(p.getName());
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
             assert report != null;
 
-            new ReportInfoMenu(ReportSystem.getPlayerMenuUtility((Player) e.getWhoClicked()), report).open();
+            new ReportInfoMenu(ReportSystem.getInstance().getPlayerMenuUtility((Player) e.getWhoClicked()), report).open();
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -86,7 +86,6 @@ public class ReportsMenu extends PaginatedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        int slot = 10;
         for (List<Report> reportList : activeReports.values()) {
             ItemBuilder book = new ItemBuilder(Material.BOOK_AND_QUILL);
 
@@ -96,21 +95,18 @@ public class ReportsMenu extends PaginatedMenu {
                 String onlineStatus = target.isOnline() ? "§a" : "§c";
                 book.setName(onlineStatus + target.getName());
 
-
-
                 try {
                     String timeAgo = report.getTimeSinceCreation();
                     Player reporter = report.getReporter();
 
 
-                    book.addLoreLine("§7" + reporter.getName() + " ; §e" + report.getReason() + " §8(" + timeAgo + "ago) ; §7ID: §e" + report.getID());
+                    book.addLoreLine("§7" + reporter.getName() + " ; §e" + report.getReason() + " ; §7ID: §e" + report.getID() + " ; §8(" + timeAgo + " ago)");
                 } catch (ParseException e) {
                     throw new RuntimeException(e);
                 }
             }
+            inventory.setItem(inventory.firstEmpty(), book.toItemStack());
 
-            inventory.setItem(slot, book.toItemStack());
-            slot++;
 
         }
     }

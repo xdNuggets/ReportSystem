@@ -14,9 +14,10 @@ import java.sql.SQLException;
 
 public class LinkAccountCmd extends ListenerAdapter {
 
-
+    private ReportSystem plugin = ReportSystem.getInstance();
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+
         if (event.getName().equals("linkaccount")) {
             SessUser user;
             try {
@@ -31,7 +32,7 @@ public class LinkAccountCmd extends ListenerAdapter {
             } else {
                 try {
                     String token = event.getOption("token").getAsString();
-                    Player player = SQLManager.getPlayerViaToken(token);
+                    Player player = plugin.getSQLManager().getPlayerViaToken(token);
                     assert player != null;
                     if(isMCAccountLinked(player)) {
                         event.reply("This account is already linked to another discord account!").setEphemeral(true).queue();
@@ -39,7 +40,7 @@ public class LinkAccountCmd extends ListenerAdapter {
                     }
 
                     if(player.isOnline() && !isMCAccountLinked(player)) {
-                        if (token.equals(SQLManager.getDiscordLinkToken(player))) {
+                        if (token.equals(plugin.getSQLManager().getDiscordLinkToken(player))) {
                             user.linkAccount(event.getUser(), player);
                             event.reply("Your account has been linked!").setEphemeral(true).queue();
                         } else {
@@ -58,7 +59,7 @@ public class LinkAccountCmd extends ListenerAdapter {
 
     private boolean isMCAccountLinked(Player player) throws SQLException {
         System.out.println(player.getName());
-        PreparedStatement ps = ReportSystem.sql.getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID=?");
+        PreparedStatement ps = plugin.getSQL().getConnection().prepareStatement("SELECT * FROM discord_linked_accounts WHERE minecraftUUID=?");
         ps.setString(1, player.getUniqueId().toString());
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {

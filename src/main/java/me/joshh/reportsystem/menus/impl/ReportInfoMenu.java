@@ -19,6 +19,8 @@ import java.util.UUID;
 
 public class ReportInfoMenu extends Menu {
 
+    ReportSystem reportSystem = ReportSystem.getInstance();
+
     Report report;
     public ReportInfoMenu(PlayerMenuUtility playerMenuUtility, Report report) {
         super(playerMenuUtility);
@@ -39,7 +41,7 @@ public class ReportInfoMenu extends Menu {
     public void handleMenu(InventoryClickEvent e) {
         switch(e.getCurrentItem().getType()) {
             case BOOK_AND_QUILL:
-                new PunishmentMenu(ReportSystem.getPlayerMenuUtility((Player) e.getWhoClicked()), report.getReportedUser()).open();
+                new PunishmentMenu(reportSystem.getPlayerMenuUtility((Player) e.getWhoClicked()), report.getReportedUser()).open();
                 break;
             case BARRIER:
                 if(e.getCurrentItem().getItemMeta().getDisplayName() == "§cDeny this report.") {
@@ -49,7 +51,7 @@ public class ReportInfoMenu extends Menu {
                     String[] newReason = new String[1];
                     player.sendMessage("§aPlease enter the new reason in the rename field.");
                     ReportSystem.sendSound(player);
-                    new AnvilGUI(ReportSystem.plugin, player, "Edit reason here", (p, reply) -> {
+                    new AnvilGUI(ReportSystem.getInstance(), player, "Edit reason here", (p, reply) -> {
                         System.out.println("hi");
                         newReason[0] = reply;
 
@@ -57,7 +59,8 @@ public class ReportInfoMenu extends Menu {
                         player.sendMessage("§aYou have denied the report.");
                         player.closeInventory();
 
-                        SQLManager.denyReport(report, newReason[0]);
+                        ReportSystem.getInstance().getSQLManager().denyReport(report, newReason[0], player);
+                        ReportSystem.notificationManager.sendDeniedReportNotification(report, player);
 
                         return newReason[0];
                     });
@@ -71,14 +74,9 @@ public class ReportInfoMenu extends Menu {
     public void setMenuItems() {
         Player reportedName = report.getReportedUser();
 
-        ItemStack borderItem = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 8);
         ItemStack denyItem = new ItemStack(Material.BARRIER, 1, (short) 7);
         ItemStack reportInfo = new ItemStack(Material.PAPER);
         ItemStack punishItem = new ItemStack(Material.BOOK_AND_QUILL);
-        ItemMeta borderMeta = borderItem.getItemMeta();
-
-        borderMeta.setDisplayName("§7");
-        borderItem.setItemMeta(borderMeta);
 
         ItemMeta infoMeta = reportInfo.getItemMeta();
         infoMeta.setDisplayName("§e " + reportedName.getName());
@@ -115,8 +113,6 @@ public class ReportInfoMenu extends Menu {
         inventory.setItem(13, reportInfo);
         inventory.setItem(15, denyItem);
 
-        for (int i = 0; i == inventory.getSize() - 3; i++) {
-            inventory.setItem(inventory.firstEmpty(), borderItem);
-        }
+        setFillerGlass();
     }
 }

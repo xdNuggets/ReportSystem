@@ -44,7 +44,7 @@ public class ReportInfoCommand extends SubCommand {
         ItemBuilder reportInfo = new ItemBuilder(Material.PAPER, 1, (byte) 0);
         reportInfo.setName("Report: " + args[1]);
         reportInfo.addLoreLine(" ");
-        Report report = SQLManager.getReportWithID(args[1]);
+        Report report = ReportSystem.getInstance().getSQLManager().getReportWithID(args[1]);
         Player reportedPlayer = report.getReportedUser();
         Player reporter = report.getReporter();
 

@@ -1,6 +1,7 @@
 package me.joshh.reportsystem.commands;
 
 import me.joshh.reportsystem.commands.subcommands.SettingsCommand;
+import me.joshh.reportsystem.commands.subcommands.StatisticsCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,6 +17,7 @@ public class PluginCommandManager implements CommandExecutor {
 
     public PluginCommandManager(){
         subcommands.add(new SettingsCommand());
+        subcommands.add(new StatisticsCommand());
     }
 
     @Override

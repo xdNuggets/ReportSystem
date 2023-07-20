@@ -22,7 +22,7 @@ public class ReportInfoCmd extends ListenerAdapter {
             if(event.getName().equals("reportinfo")) {
                 Report report;
                 try {
-                    report = SQLManager.getReportWithID(event.getOption("report-id").getAsString());
+                    report = ReportSystem.getInstance().getSQLManager().getReportWithID(event.getOption("report-id").getAsString());
                 } catch (SQLException e) {
                     throw new RuntimeException(e);
                 }

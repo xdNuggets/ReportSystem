@@ -10,6 +10,7 @@ import me.joshh.reportsystem.commands.cmds.ReportCommand;
 import me.joshh.reportsystem.discord.Bot;
 import me.joshh.reportsystem.events.MenuListener;
 import me.joshh.reportsystem.menus.PlayerMenuUtility;
+import me.joshh.reportsystem.util.NotificationManager;
 import me.joshh.reportsystem.util.Report;
 import me.joshh.reportsystem.sql.MySQL;
 import me.joshh.reportsystem.sql.SQLManager;
@@ -17,7 +18,6 @@ import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
@@ -33,11 +33,8 @@ public final class ReportSystem extends JavaPlugin {
     public static FileConfiguration config;
     public static DateTimeFormatter myFormatObj;
 
-    public static Plugin plugin;
+    public static NotificationManager notificationManager;
 
-    {
-        plugin = this;
-    }
 
 
     // Toggleable features
@@ -50,6 +47,18 @@ public final class ReportSystem extends JavaPlugin {
     public static String prefix;
 
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+
+    public static ReportSystem getInstance() {
+        return ReportSystem.getPlugin(ReportSystem.class);
+    }
+
+    public SQLManager getSQLManager() {
+        return new SQLManager();
+    }
+
+    public MySQL getSQL() {
+        return sql;
+    }
 
 
     @Override
@@ -84,15 +93,11 @@ public final class ReportSystem extends JavaPlugin {
         if(sql.isConnected()) {
 
             SQLManager sqls = new SQLManager();
-            try {
-                sqls.createReportTable();
-                sqls.createAcceptedReportTable();
-                sqls.createDeniedReportTable();
-                sqls.createDiscordTable();
+            sqls.createReportTable();
+            sqls.createAcceptedReportTable();
+            sqls.createDeniedReportTable();
+            sqls.createDiscordTable();
 
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
         }
 
         // Hopefully loads all active reports into the hashmap
@@ -110,6 +115,7 @@ public final class ReportSystem extends JavaPlugin {
         // Setup listeners
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
+
         // Discord bot
 
         try {
@@ -118,6 +124,8 @@ public final class ReportSystem extends JavaPlugin {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        notificationManager = new NotificationManager();
         /*if(!config.getString("discord-bot.token").isEmpty()) {
             if(!config.getString("discord-bot.guild-id").isEmpty()) return;
 
@@ -151,11 +159,11 @@ public final class ReportSystem extends JavaPlugin {
     }
 
 
-    public static HashMap<String, ArrayList<Report>> getActiveReports() {
+    public HashMap<String, ArrayList<Report>> getActiveReports() {
         HashMap<String, ArrayList<Report>> reports = new HashMap<>();
 
         try {
-            ArrayList<Report> allReports = SQLManager.getReports();
+            ArrayList<Report> allReports = getSQLManager().getReports();
 
             for (Report report : allReports) {
 
@@ -177,7 +185,7 @@ public final class ReportSystem extends JavaPlugin {
     }
 
 
-    public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
+    public PlayerMenuUtility getPlayerMenuUtility(Player p) {
         PlayerMenuUtility playerMenuUtility;
 
         if (!(playerMenuUtilityMap.containsKey(p))) { //See if the player has a playermenuutility "saved" for them
@@ -196,7 +204,7 @@ public final class ReportSystem extends JavaPlugin {
         String[] newReason = new String[1];
         player.sendMessage("§aPlease enter the new reason in the rename field.");
         ReportSystem.sendSound(player);
-        new AnvilGUI(ReportSystem.plugin, player, "Edit reason here", (p, reply) -> {
+        new AnvilGUI(getInstance(), player, "Edit reason here", (p, reply) -> {
             System.out.println("hi");
             newReason[0] = reply;
 

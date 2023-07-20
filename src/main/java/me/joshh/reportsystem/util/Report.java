@@ -16,8 +16,10 @@ public class Report {
     private final String reported;
     private final String reason;
     private final String reporter;
-    public String id;
-    String date;
+    private final String id;
+    private final String date;
+
+    private String status;
 
 
     public Report(Player reported, Player reporter, String reason, String date, String id) {
@@ -26,6 +28,7 @@ public class Report {
         this.reporter = reporter.getUniqueId().toString();
         this.id = id;
         this.date = date;
+        this.status = "PENDING";
 
     }
 
