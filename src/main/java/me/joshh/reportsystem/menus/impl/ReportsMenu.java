@@ -54,7 +54,7 @@ public class ReportsMenu extends PaginatedMenu {
             }
             assert report != null;
 
-            new ReportInfoMenu(ReportSystem.getInstance().getPlayerMenuUtility((Player) e.getWhoClicked()), report).open();
+            new ReportInfoMenu(ReportSystem.getInstance().getPlayerMenuUtility((Player) e.getWhoClicked()), report, true).open();
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {

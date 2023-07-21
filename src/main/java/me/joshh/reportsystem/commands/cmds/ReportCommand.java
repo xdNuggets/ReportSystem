@@ -32,17 +32,17 @@ public class ReportCommand implements CommandExecutor {
 
             if(!player.hasPermission("rs.report")) {
                 player.sendMessage("§c(!) You do not have permission to use this command.");
-                return true;
+                return false;
             }
 
             if(args.length == 0) {
                 player.sendMessage("§c(!) Usage: /report <player> <reason>");
-                return true;
+                return false;
             }
 
             if(args.length == 1) {
                 player.sendMessage("§c(!) Usage: /report <player> <reason>");
-                return true;
+                return false;
             }
 
             if(args.length >= 2) {
@@ -55,12 +55,13 @@ public class ReportCommand implements CommandExecutor {
 
                 Player reportedPlayer = player.getServer().getPlayer(args[0]);
 
+
                 LocalDateTime now = LocalDateTime.now();
                 DateTimeFormatter myFormatObj = ReportSystem.myFormatObj;
                 String formattedDate = now.format(myFormatObj);
 
 
-                // If the player is offline
+                // If the player is offline or doesn't exist
                 if(reportedPlayer == null) {
 
                     OfflinePlayer offlineTarget = player.getServer().getOfflinePlayer(args[0]);

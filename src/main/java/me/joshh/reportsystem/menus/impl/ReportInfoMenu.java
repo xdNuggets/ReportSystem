@@ -20,11 +20,12 @@ import java.util.UUID;
 public class ReportInfoMenu extends Menu {
 
     ReportSystem reportSystem = ReportSystem.getInstance();
-
+    boolean isStaff;
     Report report;
-    public ReportInfoMenu(PlayerMenuUtility playerMenuUtility, Report report) {
+    public ReportInfoMenu(PlayerMenuUtility playerMenuUtility, Report report, boolean isStaff) {
         super(playerMenuUtility);
         this.report = report;
+        this.isStaff = isStaff;
     }
 
     @Override
@@ -39,34 +40,40 @@ public class ReportInfoMenu extends Menu {
 
     @Override
     public void handleMenu(InventoryClickEvent e) {
-        switch(e.getCurrentItem().getType()) {
-            case BOOK_AND_QUILL:
-                new PunishmentMenu(reportSystem.getPlayerMenuUtility((Player) e.getWhoClicked()), report.getReportedUser()).open();
-                break;
-            case BARRIER:
-                if(e.getCurrentItem().getItemMeta().getDisplayName() == "§cDeny this report.") {
+        if(isStaff) {
+            switch (e.getCurrentItem().getType()) {
+
+                case BOOK_AND_QUILL:
+                    new PunishmentMenu(reportSystem.getPlayerMenuUtility((Player) e.getWhoClicked()), report.getReportedUser()).open();
+                    break;
+                case BARRIER:
+                    if (e.getCurrentItem().getItemMeta().getDisplayName() == "§cDeny this report.") {
+                        e.setCancelled(true);
+                        e.getWhoClicked().closeInventory();
+                        Player player = (Player) e.getWhoClicked();
+                        String[] newReason = new String[1];
+                        player.sendMessage("§aPlease enter the new reason in the rename field.");
+                        ReportSystem.sendSound(player);
+                        new AnvilGUI(ReportSystem.getInstance(), player, "Edit reason here", (p, reply) -> {
+                            System.out.println("hi");
+                            newReason[0] = reply;
+
+                            player.sendMessage("§aYou have changed the reason to: " + newReason[0]);
+                            player.sendMessage("§aYou have denied the report.");
+                            player.closeInventory();
+
+                            ReportSystem.getInstance().getSQLManager().denyReport(report, newReason[0], player);
+                            ReportSystem.notificationManager.sendDeniedReportNotification(report, player);
+
+                            return newReason[0];
+                        });
+
+
+                    }
                     e.setCancelled(true);
-                    e.getWhoClicked().closeInventory();
-                    Player player = (Player) e.getWhoClicked();
-                    String[] newReason = new String[1];
-                    player.sendMessage("§aPlease enter the new reason in the rename field.");
-                    ReportSystem.sendSound(player);
-                    new AnvilGUI(ReportSystem.getInstance(), player, "Edit reason here", (p, reply) -> {
-                        System.out.println("hi");
-                        newReason[0] = reply;
-
-                        player.sendMessage("§aYou have changed the reason to: " + newReason[0]);
-                        player.sendMessage("§aYou have denied the report.");
-                        player.closeInventory();
-
-                        ReportSystem.getInstance().getSQLManager().denyReport(report, newReason[0], player);
-                        ReportSystem.notificationManager.sendDeniedReportNotification(report, player);
-
-                        return newReason[0];
-                    });
-
-
-                }
+            }
+        }else {
+            e.setCancelled(true);
         }
     }
 

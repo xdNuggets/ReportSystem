@@ -41,7 +41,7 @@ public class PlayerReportsInfoMenu extends PaginatedMenu {
     public void handleMenu(InventoryClickEvent e) {
         try {
             if(e.getCurrentItem().getType().equals(Material.BOOK_AND_QUILL)) {
-            new ReportInfoMenu(ReportSystem.getInstance().getPlayerMenuUtility((Player) e.getWhoClicked()), ReportSystem.getInstance().getSQLManager().getReportWithID(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()))).open(); e.setCancelled(true); }
+            new ReportInfoMenu(ReportSystem.getInstance().getPlayerMenuUtility((Player) e.getWhoClicked()), ReportSystem.getInstance().getSQLManager().getReportWithID(ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName())), false).open(); e.setCancelled(true); }
             else {
                 e.setCancelled(true);
             }
