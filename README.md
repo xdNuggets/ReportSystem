@@ -27,6 +27,7 @@
 - [ ] Add extra info to report info (on click probably). This will include first played, last played, and maybe alts? (this has become a command)
 - [x] Statistics for both staff members and players
 - [ ] Allow administrators to edit the fields in discord /info command
+- [ ] Clean up everything. Code is all over the place. Work on a proper command manager, etc.
 
 # Known bugs
 - /rs settings doesn't update
