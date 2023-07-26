@@ -2,10 +2,7 @@ package me.joshh.reportsystem.commands.cmds.reportcmds;
 
 import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.commands.SubCommand;
-import me.joshh.reportsystem.commands.cmds.reportcmds.sub.PlayerActiveReportsCommand;
-import me.joshh.reportsystem.commands.cmds.reportcmds.sub.PlayerReportsInfoCommand;
-import me.joshh.reportsystem.commands.cmds.reportcmds.sub.ReportInfoCommand;
-import me.joshh.reportsystem.commands.cmds.reportcmds.sub.ReportsHelpCommand;
+import me.joshh.reportsystem.commands.cmds.reportcmds.sub.*;
 import me.joshh.reportsystem.menus.impl.PlayerReportsInfoMenu;
 import me.joshh.reportsystem.menus.impl.ReportsMenu;
 import me.joshh.reportsystem.util.ItemBuilder;
@@ -36,6 +33,7 @@ public class ReportCommandManager implements CommandExecutor {
         subcommands.add(new ReportsHelpCommand());
         subcommands.add(new PlayerActiveReportsCommand());
         subcommands.add(new PlayerReportsInfoCommand());
+        subcommands.add(new ReportCancelCommand());
 
     }
 

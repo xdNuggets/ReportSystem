@@ -21,7 +21,16 @@ public class NotificationManager {
     }
 
     public void sendCreatedReportNotification(Report report) {
-
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("New Report");
+        embedBuilder.setDescription("A new report has been created.");
+        embedBuilder.addField("Reported User", report.getReportedUser().getName(), false);
+        embedBuilder.addField("Reported By", report.getReporter().getName(), false);
+        embedBuilder.addField("Reason", report.getReason(), false);
+        embedBuilder.addField("Reported at:", report.getDate(), false);
+        embedBuilder.setFooter("Reported at " + "<t:" +System.currentTimeMillis() + ":F>");
+        embedBuilder.setColor(Color.GREEN);
+        reportChannel.sendMessageEmbeds(embedBuilder.build()).queue();
     }
 
     public void sendAcceptedReportNotification(Report report, Player player) {
@@ -72,6 +81,8 @@ public class NotificationManager {
         reportChannel.sendMessageEmbeds(embedBuilder.build()).queue();
 
     }
+
+
 
 
 }

@@ -8,6 +8,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Arrays;
 
@@ -38,7 +39,7 @@ public abstract class Menu implements InventoryHolder {
     public abstract int getSlots();
 
     //let each menu decide how the items in the menu will be handled when clicked
-    public abstract void handleMenu(InventoryClickEvent e);
+    public abstract void handleMenu(InventoryClickEvent e) throws SQLException;
 
     //let each menu decide what items are to be placed in the inventory menu
     public abstract void setMenuItems() throws ParseException;

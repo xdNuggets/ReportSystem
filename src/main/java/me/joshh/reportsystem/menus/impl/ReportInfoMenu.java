@@ -4,6 +4,7 @@ import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.menus.Menu;
 import me.joshh.reportsystem.menus.PlayerMenuUtility;
 import me.joshh.reportsystem.sql.SQLManager;
+import me.joshh.reportsystem.util.Notification;
 import me.joshh.reportsystem.util.Report;
 import net.wesjd.anvilgui.AnvilGUI;
 import org.bukkit.Bukkit;
@@ -13,6 +14,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.UUID;
@@ -64,6 +66,12 @@ public class ReportInfoMenu extends Menu {
 
                             ReportSystem.getInstance().getSQLManager().denyReport(report, newReason[0], player);
                             ReportSystem.notificationManager.sendDeniedReportNotification(report, player);
+                            try {
+                                ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification((Player)e.getWhoClicked(), report, "PENDING", "DENIED"));
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
 
                             return newReason[0];
                         });

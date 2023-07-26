@@ -93,22 +93,19 @@ public class SQLManager {
 
     /**
      * Creates a report in the database.
-     * @param reporter
-     * @param reported
-     * @param reason
-     * @param date
+     * @param report
      * @throws SQLException
      */
-    public void createSQLReport(Player reporter, Player reported, String reason, String date) throws SQLException {
+    public void createSQLReport(Report report) throws SQLException {
         PreparedStatement ps;
-        String id = generateID(7);
-        addReport(new Report(reported, reporter, reason, date, id));
+
+        addReport(report);
         ps = mySQL.getConnection().prepareStatement("INSERT INTO reports (id, reporter, reported, reason, date, status) VALUES (?, ?, ?, ?, ?, ?)");
-        ps.setString(1, id);
-        ps.setString(2, reporter.getUniqueId().toString());
-        ps.setString(3, reported.getUniqueId().toString());
-        ps.setString(4, reason);
-        ps.setString(5, date);
+        ps.setString(1, report.getID());
+        ps.setString(2, report.getReporter().getUniqueId().toString());
+        ps.setString(3, report.getReportedUser().getUniqueId().toString());
+        ps.setString(4, report.getReason());
+        ps.setString(5, report.getDate());
         ps.setString(6, "PENDING");
         ps.executeUpdate();
     }
@@ -358,6 +355,14 @@ public class SQLManager {
         }
 
         return reports;
+    }
+
+
+    public void cancelReport(String id) throws SQLException {
+        PreparedStatement ps;
+        ps = mySQL.getConnection().prepareStatement("DELETE FROM reports WHERE id = ?");
+        ps.setString(1, id);
+        ps.executeUpdate();
     }
 
 

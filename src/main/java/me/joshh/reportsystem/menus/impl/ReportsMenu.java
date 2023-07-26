@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -58,6 +59,7 @@ public class ReportsMenu extends PaginatedMenu {
         }
 
         if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
+
 
             //close inventory
             e.getWhoClicked().closeInventory();

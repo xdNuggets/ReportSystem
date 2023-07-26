@@ -5,11 +5,13 @@ import me.joshh.reportsystem.commands.PluginCommandManager;
 import me.joshh.reportsystem.commands.admin.ReloadSQLCommand;
 import me.joshh.reportsystem.commands.admin.TestingCommand;
 import me.joshh.reportsystem.commands.cmds.LinkAccountCommand;
+import me.joshh.reportsystem.commands.cmds.NotificationCommand;
 import me.joshh.reportsystem.commands.cmds.reportcmds.ReportCommandManager;
 import me.joshh.reportsystem.commands.cmds.ReportCommand;
 import me.joshh.reportsystem.discord.Bot;
 import me.joshh.reportsystem.events.MenuListener;
 import me.joshh.reportsystem.menus.PlayerMenuUtility;
+import me.joshh.reportsystem.sql.NotificationSQL;
 import me.joshh.reportsystem.util.NotificationManager;
 import me.joshh.reportsystem.util.Report;
 import me.joshh.reportsystem.sql.MySQL;
@@ -59,7 +61,11 @@ public final class ReportSystem extends JavaPlugin {
     public MySQL getSQL() {
         return sql;
     }
+    private NotificationSQL notificationSQL;
 
+    public NotificationSQL getNotificationSQL() {
+        return notificationSQL;
+    }
 
     @Override
     public void onEnable() {
@@ -68,7 +74,6 @@ public final class ReportSystem extends JavaPlugin {
 
         config = getConfig();
         activeReports = new HashMap<>();
-
 
         myFormatObj = DateTimeFormatter.ofPattern(ReportSystem.config.getString("messages.date-format"));
 
@@ -97,6 +102,11 @@ public final class ReportSystem extends JavaPlugin {
             sqls.createAcceptedReportTable();
             sqls.createDeniedReportTable();
             sqls.createDiscordTable();
+            try {
+                notificationSQL.createTable();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
         }
 
@@ -110,6 +120,7 @@ public final class ReportSystem extends JavaPlugin {
         getCommand("sql").setExecutor(new ReloadSQLCommand());
         getCommand("test").setExecutor(new TestingCommand());
         getCommand("linkaccount").setExecutor(new LinkAccountCommand());
+        getCommand("notifications").setExecutor(new NotificationCommand());
 
 
         // Setup listeners
@@ -126,6 +137,7 @@ public final class ReportSystem extends JavaPlugin {
         }
 
         notificationManager = new NotificationManager();
+        notificationSQL = new NotificationSQL();
         /*if(!config.getString("discord-bot.token").isEmpty()) {
             if(!config.getString("discord-bot.guild-id").isEmpty()) return;
 
@@ -150,6 +162,8 @@ public final class ReportSystem extends JavaPlugin {
     public void onDisable() {
         Bot.jda.shutdownNow();
         getLogger().info("Discord Bot successfully shutdown.");
+        sql.disconnect();
+        getLogger().info("Disconnected from MySQL database");
     }
 
     public static void sendSound(Player player) {

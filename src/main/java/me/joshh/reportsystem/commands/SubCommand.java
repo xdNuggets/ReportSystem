@@ -1,11 +1,15 @@
 package me.joshh.reportsystem.commands;
 
+import me.joshh.reportsystem.ReportSystem;
+import me.joshh.reportsystem.sql.SQLManager;
 import org.bukkit.entity.Player;
 
 import java.sql.SQLException;
 import java.text.ParseException;
 
 public abstract class SubCommand {
+
+    public SQLManager sqlManager = ReportSystem.getInstance().getSQLManager();
 
     //name of the subcommand ex. /prank <subcommand> <-- that
     public abstract String getName();

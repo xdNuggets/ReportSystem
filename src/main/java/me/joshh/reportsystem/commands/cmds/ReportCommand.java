@@ -1,11 +1,15 @@
 package me.joshh.reportsystem.commands.cmds;
 
 import me.joshh.reportsystem.ReportSystem;
+import me.joshh.reportsystem.menus.impl.ReportReasonMenu;
 import me.joshh.reportsystem.sql.SQLManager;
+import me.joshh.reportsystem.util.Notification;
+import me.joshh.reportsystem.util.Report;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -36,12 +40,12 @@ public class ReportCommand implements CommandExecutor {
             }
 
             if(args.length == 0) {
-                player.sendMessage("§c(!) Usage: /report <player> <reason>");
+                player.sendMessage("§c(!) Invalid usage. /report <player> <reason> or /report <player>");
                 return false;
             }
 
             if(args.length == 1) {
-                player.sendMessage("§c(!) Usage: /report <player> <reason>");
+                new ReportReasonMenu(ReportSystem.getInstance().getPlayerMenuUtility(player), Bukkit.getPlayer(args[0])).open();
                 return false;
             }
 
@@ -85,12 +89,15 @@ public class ReportCommand implements CommandExecutor {
                             }
                         }
                         try {
-                            sql.createSQLReport((Player) offlineTarget, player, reason, formattedDate);
+                            Report report = new Report((Player) offlineTarget, player, reason, formattedDate, ReportSystem.getInstance().getSQLManager().generateID(7));
+                            sql.createSQLReport(report);
+                            ReportSystem.notificationManager.sendCreatedReportNotification(report);
+                            ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification(player, report, "CREATED", "PENDING"));
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
                     }else {
-                        player.sendMessage("§c(!) That player has never joined the network!");
+                        player.sendMessage("§c(!) That player has never joined the server!");
                     }
                 }else {
                     // If the player is online, create a report
@@ -112,7 +119,10 @@ public class ReportCommand implements CommandExecutor {
                     }
 
                     try {
-                        sql.createSQLReport(player, reportedPlayer, reason, formattedDate);
+                        Report report = new Report(reportedPlayer, player, reason, formattedDate, ReportSystem.getInstance().getSQLManager().generateID(7));
+                        sql.createSQLReport(report);
+                        ReportSystem.notificationManager.sendCreatedReportNotification(report);
+                        ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification(player, report, "CREATED", "PENDING"));
 
                     } catch (SQLException e) {
                         e.printStackTrace();

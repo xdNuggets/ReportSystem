@@ -4,6 +4,7 @@ import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.menus.Menu;
 import me.joshh.reportsystem.menus.PlayerMenuUtility;
 import me.joshh.reportsystem.sql.SQLManager;
+import me.joshh.reportsystem.util.Notification;
 import me.joshh.reportsystem.util.NotificationManager;
 import me.joshh.reportsystem.util.Report;
 import org.bukkit.Bukkit;
@@ -38,7 +39,7 @@ public class PunishmentMenu extends Menu {
     private SQLManager manager = ReportSystem.getInstance().getSQLManager();
 
     @Override
-    public void handleMenu(InventoryClickEvent e) {
+    public void handleMenu(InventoryClickEvent e) throws SQLException {
         String reportedUser = e.getInventory().getTitle().replace("§7", "").replace("'s Report", "");
         Report report;
         try {
@@ -53,27 +54,24 @@ public class PunishmentMenu extends Menu {
                 String warnReason = changeReason((Player) e.getWhoClicked());
                 // Warn stuff
                 manager.acceptReport(report, warnReason, ((Player) e.getWhoClicked()));
-                notificationManager.sendAcceptedReportNotification(report, ((Player) e.getWhoClicked()));
             case "§8Mute":
-
                 String muteReason = changeReason((Player) e.getWhoClicked());
                 // Mute stuff
                 manager.acceptReport(report, muteReason, ((Player) e.getWhoClicked()));
-                notificationManager.sendAcceptedReportNotification(report, ((Player) e.getWhoClicked()));
+
 
             case "§cKick":
                 String kickReason = changeReason((Player) e.getWhoClicked());
                 // Kick stuff
                 manager.acceptReport(report, kickReason, ((Player) e.getWhoClicked()));
-                notificationManager.sendAcceptedReportNotification(report, ((Player) e.getWhoClicked()));
-
             case "§4Ban":
                 String banReason = changeReason((Player) e.getWhoClicked());
                 //TODO: allow config to change ban command
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + reportedUser + " " + banReason);
                 manager.acceptReport(report, banReason, ((Player) e.getWhoClicked()));
-                notificationManager.sendAcceptedReportNotification(report, ((Player) e.getWhoClicked()));
         }
+        notificationManager.sendAcceptedReportNotification(report, ((Player) e.getWhoClicked()));
+        ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification((Player)e.getWhoClicked(), report, "PENDING", "ACCEPTED"));
     }
 
     @Override
