@@ -48,12 +48,52 @@ public class PlayerReportsInfoMenu extends PaginatedMenu {
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
+
+
+        if (e.getCurrentItem().getType().equals(Material.BARRIER)) {
+
+
+            //close inventory
+            e.getWhoClicked().closeInventory();
+
+        } else if (e.getCurrentItem().getType().equals(Material.WOOD_BUTTON)) {
+            if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Left")) {
+                if (page == 0) {
+                    e.getWhoClicked().sendMessage(ChatColor.GRAY + "You are already on the first page.");
+                } else {
+                    page = page - 1;
+
+                    super.open();
+                }
+            } else if (ChatColor.stripColor(e.getCurrentItem().getItemMeta().getDisplayName()).equalsIgnoreCase("Right")) {
+                if (!((index + 1) >= reports.size())) {
+                    page = page + 1;
+                    super.open();
+                } else {
+                    e.getWhoClicked().sendMessage(ChatColor.GRAY + "You are on the last page.");
+                }
+            }
+
+
+        }
     }
 
     @Override
     public void setMenuItems() throws ParseException {
         addMenuBorder();
-        for (Report report : reports) {
+
+        for (int i = 0; i < getMaxItemsPerPage(); i++) {
+
+
+            int index = getMaxItemsPerPage() * page + i;
+            if (index >= reports.size()) {
+                break;
+            }
+            if (reports.get(index) == null) {
+                continue;
+            }
+
+            Report report = reports.get(index);
             ItemStack book = new ItemStack(Material.BOOK_AND_QUILL);
             ItemMeta bookMeta = book.getItemMeta();
             bookMeta.setDisplayName("§e" + report.getID());
@@ -62,23 +102,16 @@ public class PlayerReportsInfoMenu extends PaginatedMenu {
             Player reporter = report.getReporter();
 
             ArrayList<String> lore = new ArrayList<>();
-            if(allorNot) {
-                lore.add("§7Reported User: §a" + report.getReportedUser().getName());
-                lore.add("§7Reason: §a" + report.getReason());
-                lore.add("§7Created: §a" + timeAgo + "ago");
-
-            }else {
-                lore.add("§7Reported By: §a" + reporter.getName());
-                lore.add("§7Reason: §a" + report.getReason());
-                lore.add("§7Created: §a" + timeAgo + "ago");
-            }
-
-
+            String line1 = allorNot ? "§7Reported: §a" + report.getReportedUser().getName() : "§7Reporter: §a" + reporter.getName();
+            lore.add(line1);
+            lore.add("§7Reason: §a" + report.getReason());
+            lore.add("§7Created: §a" + timeAgo + "ago");
 
             bookMeta.setLore(lore);
             book.setItemMeta(bookMeta);
-            inventory.setItem(inventory.firstEmpty(), book);
 
+
+            inventory.addItem(book); // add statement
         }
     }
 }

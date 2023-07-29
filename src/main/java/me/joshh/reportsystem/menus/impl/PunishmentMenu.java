@@ -5,7 +5,7 @@ import me.joshh.reportsystem.menus.Menu;
 import me.joshh.reportsystem.menus.PlayerMenuUtility;
 import me.joshh.reportsystem.sql.SQLManager;
 import me.joshh.reportsystem.util.Notification;
-import me.joshh.reportsystem.util.NotificationManager;
+import me.joshh.reportsystem.util.DiscordAlertManager;
 import me.joshh.reportsystem.util.Report;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -15,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 
 import static me.joshh.reportsystem.ReportSystem.changeReason;
 
@@ -48,7 +47,7 @@ public class PunishmentMenu extends Menu {
             throw new RuntimeException(ex);
         }
         assert report != null;
-        NotificationManager notificationManager = ReportSystem.notificationManager;
+        DiscordAlertManager discordAlertManager = ReportSystem.discordAlertManager;
         switch(e.getCurrentItem().getItemMeta().getDisplayName()) {
             case "§7Warn":
                 String warnReason = changeReason((Player) e.getWhoClicked());
@@ -70,8 +69,8 @@ public class PunishmentMenu extends Menu {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "ban " + reportedUser + " " + banReason);
                 manager.acceptReport(report, banReason, ((Player) e.getWhoClicked()));
         }
-        notificationManager.sendAcceptedReportNotification(report, ((Player) e.getWhoClicked()));
-        ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification((Player)e.getWhoClicked(), report, "PENDING", "ACCEPTED"));
+        discordAlertManager.sendAcceptedReportNotification(report, ((Player) e.getWhoClicked()));
+        ReportSystem.getInstance().getNotificationManager().addNotification(new Notification((Player)e.getWhoClicked(), report, "PENDING", "ACCEPTED"));
     }
 
     @Override

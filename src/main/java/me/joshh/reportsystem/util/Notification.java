@@ -34,6 +34,10 @@ public class Notification {
     }
 
     public String toString() {
-        return "Report ID: " + report.getID() + " Status changed from " + oldStatus + " to " + newStatus;
+        if(oldStatus.equals("CREATED")) {
+            return "§7You created a new report! ID: §e" + report.getID();
+        }else {
+            return "§7Report ID: §e" + report.getID() + " §7; Status changed from §e" + oldStatus + "§7 to §e" + newStatus;
+        }
     }
 }

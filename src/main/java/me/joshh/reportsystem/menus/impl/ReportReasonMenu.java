@@ -12,7 +12,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -26,12 +25,12 @@ public class ReportReasonMenu extends Menu {
 
     @Override
     public String getMenuName() {
-        return "Choose a reason for your report.";
+        return "Report Reason";
     }
 
     @Override
     public int getSlots() {
-        return 0;
+        return 54;
     }
 
     @Override
@@ -74,6 +73,10 @@ public class ReportReasonMenu extends Menu {
             case BARRIER:
                 reason = "Other";
                 break;
+
+            case STAINED_GLASS_PANE:
+                e.setCancelled(true);
+                return;
         }
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter myFormatObj = ReportSystem.myFormatObj;
@@ -85,7 +88,7 @@ public class ReportReasonMenu extends Menu {
 
         player.sendMessage("§a(!) Successfully reported " + target.getName() + " for " + reason + ".");
         try {
-            ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification((Player)e.getWhoClicked(), report, "CREATED", "PENDING"));
+            ReportSystem.getInstance().getNotificationManager().addNotification(new Notification((Player)e.getWhoClicked(), report, "CREATED", "PENDING"));
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -96,7 +99,7 @@ public class ReportReasonMenu extends Menu {
 
     @Override
     public void setMenuItems() {
-        setFillerGlass();
+
         ItemStack hackingItem = new ReasonItem(Material.DIAMOND_SWORD, "Hacking", "Unfair Advantage").getItem();
         ItemStack chatItem = new ReasonItem(Material.BOOK, "Rudeness", "Rudeness").getItem();
         ItemStack bugAbuseItem = new ReasonItem(Material.REDSTONE, "Bug Abuse", "Abusing a bug to gain an advantage").getItem();
@@ -110,6 +113,8 @@ public class ReportReasonMenu extends Menu {
         ItemStack otherItem = new ReasonItem(Material.BARRIER, "Other", "Other").getItem();
 
         inventory.addItem(hackingItem, chatItem, bugAbuseItem, advertisingItem, inappropriateNameItem, inappropriateSkinItem, inappropriateCapeItem, chatAbuseItem, racismItem, otherItem);
+        setFillerGlass();
+
     }
 
 

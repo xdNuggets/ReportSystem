@@ -2,6 +2,7 @@ package me.joshh.reportsystem;
 
 
 import me.joshh.reportsystem.commands.PluginCommandManager;
+import me.joshh.reportsystem.commands.admin.ClearReportsCommand;
 import me.joshh.reportsystem.commands.admin.ReloadSQLCommand;
 import me.joshh.reportsystem.commands.admin.TestingCommand;
 import me.joshh.reportsystem.commands.cmds.LinkAccountCommand;
@@ -11,12 +12,14 @@ import me.joshh.reportsystem.commands.cmds.ReportCommand;
 import me.joshh.reportsystem.discord.Bot;
 import me.joshh.reportsystem.events.MenuListener;
 import me.joshh.reportsystem.menus.PlayerMenuUtility;
-import me.joshh.reportsystem.sql.NotificationSQL;
-import me.joshh.reportsystem.util.NotificationManager;
+import me.joshh.reportsystem.sql.NotificationManager;
+import me.joshh.reportsystem.util.DiscordAlertManager;
 import me.joshh.reportsystem.util.Report;
 import me.joshh.reportsystem.sql.MySQL;
 import me.joshh.reportsystem.sql.SQLManager;
 import net.wesjd.anvilgui.AnvilGUI;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -26,6 +29,7 @@ import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 public final class ReportSystem extends JavaPlugin {
 
@@ -35,7 +39,7 @@ public final class ReportSystem extends JavaPlugin {
     public static FileConfiguration config;
     public static DateTimeFormatter myFormatObj;
 
-    public static NotificationManager notificationManager;
+    public static DiscordAlertManager discordAlertManager;
 
 
 
@@ -61,10 +65,10 @@ public final class ReportSystem extends JavaPlugin {
     public MySQL getSQL() {
         return sql;
     }
-    private NotificationSQL notificationSQL;
+    private NotificationManager notificationManager;
 
-    public NotificationSQL getNotificationSQL() {
-        return notificationSQL;
+    public NotificationManager getNotificationManager() {
+        return notificationManager;
     }
 
     @Override
@@ -83,86 +87,80 @@ public final class ReportSystem extends JavaPlugin {
         banCommand = getConfig().getBoolean("use-ban-command");
         showDate = getConfig().getBoolean("show-date");
 
+        // dumbass prefix
         prefix = "XlX5»Xr".replace("X", "§");
 
         // Setup SQL
         sql = new MySQL();
-        try {
-            sql.connect();
-            getLogger().info("Connected to MySQL database");
 
+
+
+        try {
+            if(sql != null) {
+            sql.connect();
+            getLogger().info("Connected to MySQL database"); }
         } catch (SQLException e) {
-            getLogger().warning("Failed to connect to MySQL database");
+            getLogger().warning(ChatColor.RED + "Failed to connect to MySQL database");
+            getLogger().log(Level.SEVERE, "Disabling plugin due to error while connecting to SQL Database. Please make sure all values are correct in the config.yml");
+            Bukkit.getPluginManager().disablePlugin(ReportSystem.getInstance());
         }
 
-        if(sql.isConnected()) {
 
+        if(getPlugin(ReportSystem.class).isEnabled() && sql.isConnected()) {
             SQLManager sqls = new SQLManager();
+            notificationManager = new NotificationManager();
             sqls.createReportTable();
             sqls.createAcceptedReportTable();
             sqls.createDeniedReportTable();
             sqls.createDiscordTable();
-            try {
-                notificationSQL.createTable();
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
+            notificationManager.createTable();
+            activeReports = getActiveReports();
 
-        }
-
-        // Hopefully loads all active reports into the hashmap
-        activeReports = getActiveReports();
-
-        // Setup commands
-        getCommand("report").setExecutor(new ReportCommand());
-        getCommand("reports").setExecutor(new ReportCommandManager());
-        getCommand("reportsystem").setExecutor(new PluginCommandManager());
-        getCommand("sql").setExecutor(new ReloadSQLCommand());
-        getCommand("test").setExecutor(new TestingCommand());
-        getCommand("linkaccount").setExecutor(new LinkAccountCommand());
-        getCommand("notifications").setExecutor(new NotificationCommand());
+            getCommand("report").setExecutor(new ReportCommand());
+            getCommand("reports").setExecutor(new ReportCommandManager());
+            getCommand("reportsystem").setExecutor(new PluginCommandManager());
+            getCommand("sql").setExecutor(new ReloadSQLCommand());
+            getCommand("test").setExecutor(new TestingCommand());
+            getCommand("linkaccount").setExecutor(new LinkAccountCommand());
+            getCommand("notifications").setExecutor(new NotificationCommand());
+            getCommand("clearreports").setExecutor(new ClearReportsCommand());
 
 
-        // Setup listeners
-        getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
-
-        // Discord bot
-
-        try {
-            new Bot(config.getString("discord-bot.token")).start();
-            getLogger().info("Discord Bot successfully started.");
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-        notificationManager = new NotificationManager();
-        notificationSQL = new NotificationSQL();
-        /*if(!config.getString("discord-bot.token").isEmpty()) {
-            if(!config.getString("discord-bot.guild-id").isEmpty()) return;
+            // Setup listeners
+            getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
             try {
-                new Bot().start();
+                if(config.getString("discord-bot.token") != null) {
+                new Bot(config.getString("discord-bot.token")).start(); }
                 getLogger().info("Discord Bot successfully started.");
+                discordAlertManager = new DiscordAlertManager();
+                getLogger().info("Notification Manager successfully initialized.");
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
 
-        } else {
-            getLogger().warning("Some required values for the Discord Bot are empty/invalid. Please correct them in the config.yml. Discord Bot has not been started");
+
+
         }
 
-         */
+
+        // Discord bot
 
 
 
     }
-
     @Override
     public void onDisable() {
-        Bot.jda.shutdownNow();
+        if(Bot.jda != null) {
+        Bot.jda.shutdownNow();}
         getLogger().info("Discord Bot successfully shutdown.");
-        sql.disconnect();
+        try {
+            sql.disconnect();
+        } catch (Exception e) {
+            getLogger().log(Level.SEVERE, "SQL never initialized. Cannot shut down.");
+            throw new RuntimeException(e);
+        }
         getLogger().info("Disconnected from MySQL database");
     }
 

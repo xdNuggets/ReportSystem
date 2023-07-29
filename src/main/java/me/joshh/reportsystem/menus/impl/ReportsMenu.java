@@ -88,28 +88,37 @@ public class ReportsMenu extends PaginatedMenu {
     @Override
     public void setMenuItems() {
         addMenuBorder();
-        for (List<Report> reportList : activeReports.values()) {
-            ItemBuilder book = new ItemBuilder(Material.BOOK_AND_QUILL);
 
-            for (Report report : reportList) {
-                Player target = report.getReportedUser();
+        for(int i = 0; i < getMaxItemsPerPage(); i++) {
+            index = getMaxItemsPerPage() * page + i;
+            if(index >= activeReports.size()) break;
+            if(activeReports.get(index) == null) break;
 
-                String onlineStatus = target.isOnline() ? "§a" : "§c";
-                book.setName(onlineStatus + target.getName());
+            for (List<Report> reportList : activeReports.values()) {
+                ItemBuilder book = new ItemBuilder(Material.BOOK_AND_QUILL);
 
-                try {
-                    String timeAgo = report.getTimeSinceCreation();
-                    Player reporter = report.getReporter();
+                for (Report report : reportList) {
+                    Player target = report.getReportedUser();
+
+                    String onlineStatus = target.isOnline() ? "§a" : "§c";
+                    book.setName(onlineStatus + target.getName());
+
+                    try {
+                        String timeAgo = report.getTimeSinceCreation();
+                        Player reporter = report.getReporter();
 
 
-                    book.addLoreLine("§7" + reporter.getName() + " ; §e" + report.getReason() + " ; §7ID: §e" + report.getID() + " ; §8(" + timeAgo + " ago)");
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
+                        book.addLoreLine("§7" + reporter.getName() + " ; §e" + report.getReason() + " §7; ID: §e" + report.getID() + " §7; §8(" + timeAgo + "ago)");
+                    } catch (ParseException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
+                inventory.addItem(book.toItemStack());
             }
-            inventory.setItem(inventory.firstEmpty(), book.toItemStack());
 
 
         }
+
+
     }
 }

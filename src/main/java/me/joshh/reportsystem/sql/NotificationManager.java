@@ -2,20 +2,24 @@ package me.joshh.reportsystem.sql;
 
 import me.joshh.reportsystem.ReportSystem;
 import me.joshh.reportsystem.util.Notification;
-import me.joshh.reportsystem.util.Report;
 import org.bukkit.entity.Player;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class NotificationSQL {
+public class NotificationManager {
 
     private MySQL sql = ReportSystem.getInstance().getSQL();
 
-    public void createTable() throws SQLException {
-        PreparedStatement ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS notifications (reportID VARCHAR(10) PRIMARY KEY, oldStatus VARCHAR(10), newStatus VARCHAR(10), player VARCHAR(128))");
-        ps.executeUpdate();
+    public void createTable(){
+         try {
+             PreparedStatement ps = sql.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS notifications (reportID VARCHAR(10) PRIMARY KEY, oldStatus VARCHAR(10), newStatus VARCHAR(10), player VARCHAR(128))");
+             ps.executeUpdate();
+         }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
 
     }
 

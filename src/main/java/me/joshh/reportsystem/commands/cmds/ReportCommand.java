@@ -91,8 +91,8 @@ public class ReportCommand implements CommandExecutor {
                         try {
                             Report report = new Report((Player) offlineTarget, player, reason, formattedDate, ReportSystem.getInstance().getSQLManager().generateID(7));
                             sql.createSQLReport(report);
-                            ReportSystem.notificationManager.sendCreatedReportNotification(report);
-                            ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification(player, report, "CREATED", "PENDING"));
+                            ReportSystem.discordAlertManager.sendCreatedReportNotification(report);
+                            ReportSystem.getInstance().getNotificationManager().addNotification(new Notification(player, report, "CREATED", "PENDING"));
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -121,8 +121,8 @@ public class ReportCommand implements CommandExecutor {
                     try {
                         Report report = new Report(reportedPlayer, player, reason, formattedDate, ReportSystem.getInstance().getSQLManager().generateID(7));
                         sql.createSQLReport(report);
-                        ReportSystem.notificationManager.sendCreatedReportNotification(report);
-                        ReportSystem.getInstance().getNotificationSQL().addNotification(new Notification(player, report, "CREATED", "PENDING"));
+                        ReportSystem.discordAlertManager.sendCreatedReportNotification(report);
+                        ReportSystem.getInstance().getNotificationManager().addNotification(new Notification(player, report, "CREATED", "PENDING"));
 
                     } catch (SQLException e) {
                         e.printStackTrace();

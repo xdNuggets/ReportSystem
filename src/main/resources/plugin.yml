@@ -34,3 +34,8 @@ commands:
 
   notifications:
     description: Sends your notifications for reports you've created.
+
+  clearreports:
+    description: read u dumbass
+    aliases: [cr]
+

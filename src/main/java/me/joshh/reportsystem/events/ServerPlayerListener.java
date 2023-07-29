@@ -1,7 +1,7 @@
 package me.joshh.reportsystem.events;
 
 import me.joshh.reportsystem.ReportSystem;
-import me.joshh.reportsystem.sql.NotificationSQL;
+import me.joshh.reportsystem.sql.NotificationManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,15 +11,15 @@ import java.sql.SQLException;
 
 public class ServerPlayerListener implements Listener {
 
-    NotificationSQL notificationSQL = ReportSystem.getInstance().getNotificationSQL();
+    NotificationManager notificationManager = ReportSystem.getInstance().getNotificationManager();
 
 
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) throws SQLException {
         Player player = e.getPlayer();
-        if(notificationSQL.getNotifications(player).size() > 0) {
-            player.sendMessage("You have " + notificationSQL.getNotifications(player).size() + " new notifications!");
+        if(notificationManager.getNotifications(player).size() > 0) {
+            player.sendMessage("You have " + notificationManager.getNotifications(player).size() + " new notifications!");
             player.sendMessage("Use /notifications to view them.");
 
         }

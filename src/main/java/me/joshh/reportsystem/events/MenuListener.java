@@ -13,13 +13,14 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.InventoryHolder;
 
+import java.sql.SQLException;
 import java.util.EventListener;
 
 public class MenuListener implements Listener {
 
 
     @EventHandler
-    public void onMenuClick(InventoryClickEvent e) {
+    public void onMenuClick(InventoryClickEvent e) throws SQLException {
         InventoryHolder holder = e.getInventory().getHolder();
         //If the inventoryholder of the inventory clicked on
         // is an instance of Menu, then gg. The reason that

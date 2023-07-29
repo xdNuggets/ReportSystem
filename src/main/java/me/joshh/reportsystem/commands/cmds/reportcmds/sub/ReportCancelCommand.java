@@ -39,7 +39,7 @@ public class ReportCancelCommand extends SubCommand {
             if(report.getReporter().getUniqueId().equals(player.getUniqueId())) {
                 sqlManager.cancelReport(id);
                 player.sendMessage("§a(!) Successfully deleted report §e" + id + "§a.");
-                ReportSystem.notificationManager.sendCancelledReportNotification(report);
+                ReportSystem.discordAlertManager.sendCancelledReportNotification(report);
             } else {
                 player.sendMessage("§c(!) You cannot delete a report that you did not make.");
             }

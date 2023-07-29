@@ -29,6 +29,7 @@ public abstract class PaginatedMenu extends Menu {
 
     //Set the border and menu buttons for the menu
     public void addMenuBorder(){
+        super.FILLER_GLASS.getItemMeta().setDisplayName(" ");
         inventory.setItem(48, makeItem(Material.WOOD_BUTTON, ChatColor.GREEN + "Left"));
 
         inventory.setItem(49, makeItem(Material.BARRIER, ChatColor.DARK_RED + "Close"));
@@ -58,5 +59,7 @@ public abstract class PaginatedMenu extends Menu {
     public int getMaxItemsPerPage() {
         return maxItemsPerPage;
     }
+
+
 }
 

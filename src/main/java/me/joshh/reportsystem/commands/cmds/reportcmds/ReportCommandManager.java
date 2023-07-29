@@ -30,7 +30,7 @@ public class ReportCommandManager implements CommandExecutor {
 
     public ReportCommandManager(){
         subcommands.add(new ReportInfoCommand());
-        subcommands.add(new ReportsHelpCommand());
+
         subcommands.add(new PlayerActiveReportsCommand());
         subcommands.add(new PlayerReportsInfoCommand());
         subcommands.add(new ReportCancelCommand());
@@ -54,6 +54,15 @@ public class ReportCommandManager implements CommandExecutor {
                         }
                     }
                 }
+                if(args[0].equalsIgnoreCase("help")) {
+                    p.sendMessage("§e§lReports Help");
+                    p.sendMessage("§a-------------------------");
+                    for (int i = 0; i < getSubcommands().size(); i++) {
+                        p.sendMessage("§e" + getSubcommands().get(i).getSyntax() + " §7- " + getSubcommands().get(i).getDescription());
+                    }
+                    p.sendMessage("§a-------------------------");
+                }
+
             } else if (args.length == 0) {
                 if (p.hasPermission("rs.manage")) {
 

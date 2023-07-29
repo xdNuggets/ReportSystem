@@ -31,3 +31,11 @@ commands:
   linkaccount:
     description: lets you link your account to your discord account.
     aliases: [link, linkacc]
+
+  notifications:
+    description: Sends your notifications for reports you've created.
+
+  clearreports:
+    description: read u dumbass
+    aliases: [cr]
+

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import java.awt.*;
 
-public class NotificationManager {
+public class DiscordAlertManager {
 
     /*
     * This class is responsible for sending notifications to the player when a report is created, accepted, denied, edited, or cancelled.
@@ -16,7 +16,7 @@ public class NotificationManager {
      */
 
     private TextChannel reportChannel = Bot.jda.getTextChannelById(ReportSystem.config.getString("discord-bot.alerts-channel-id"));
-    public NotificationManager() {
+    public DiscordAlertManager() {
 
     }
 
