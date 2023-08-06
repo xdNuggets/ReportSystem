@@ -41,7 +41,7 @@ public class StatisticsMenu extends Menu {
         meta.setDisplayName("§cDenied Reports");
         ArrayList<String> lore = new ArrayList<>();
         boolean isStaff = playerMenuUtility.getOwner().hasPermission("");
-        lore.add(isStaff ? "§aYou have denied §e " + getAmountofReportsDenied(true) + " §areports." : "§e" + getAmountofReportsDenied(false) + " §aof your reports have been denied.");
+        lore.add(isStaff ? "§aYou have denied §e" + getAmountofReportsDenied(true) + " §areports." : "§e" + getAmountofReportsDenied(false) + " §aof your reports have been denied.");
         meta.setLore(lore);
         deniedReportsItem.setItemMeta(meta);
         inventory.setItem(11, deniedReportsItem);
@@ -50,7 +50,7 @@ public class StatisticsMenu extends Menu {
         ItemMeta meta2 = acceptedReportsItem.getItemMeta();
         meta2.setDisplayName("§aAccepted Reports");
         ArrayList<String> lore2 = new ArrayList<>();
-        lore.add(isStaff ? "§aYou have denied §e " + getAmountofReportsAccepted(true) + " §areports." : "§e" + getAmountofReportsAccepted(false) + " §aof your reports have been denied.");
+        lore.add(isStaff ? "§aYou have denied §e" + getAmountofReportsAccepted(true) + " §areports." : "§e" + getAmountofReportsAccepted(false) + " §aof your reports have been denied.");
 
         lore2.add("§aYou have accepted §e " + 0 + " §areports.");
         meta2.setLore(lore2);
